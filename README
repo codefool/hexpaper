@@ -1,0 +1,7 @@
+// Hexpaper - library for working with hexpaper grids
+namespace org {
+namespace codefool {
+namespace hexpaper {
+} // end hexpaper
+} // end codefool
+} // end org
