@@ -7,28 +7,18 @@
 //============================================================================
 
 #include <iostream>
+#include "defaults.hpp"
 using namespace std;
 
 namespace org {
 namespace codefool {
 namespace hexpaper {
-
-struct _defaults
-{
-    bool oddGrid;   // true if grid is odd-oriented, false if even
-    _defaults()
-    : oddGrid(false)
-    {}
-};
-
-static _defaults defaults;
-
 } // end ns hexpaper
 } // end ns codefool
 } // end ns org
 
 int main() {
-    org::codefool::hexpaper::defaults.oddGrid = true;
+    org::codefool::hexpaper::defaults.setOddGrid( true );
 
     cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 	return 0;
