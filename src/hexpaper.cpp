@@ -11,8 +11,18 @@
 using namespace std;
 
 int main() {
+    org::codefool::hexpaper::Hex h(5,5);
+    for( int f = org::codefool::hexpaper::FACING_A; f < org::codefool::hexpaper::FACING_CNT; f++ )
+    {
+        org::codefool::hexpaper::Offset off = h.delta( (org::codefool::hexpaper::Facing)f );
+        std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
+    }
     org::codefool::hexpaper::defaults.setOddGrid( true );
+    for( int f = org::codefool::hexpaper::FACING_A; f < org::codefool::hexpaper::FACING_CNT; f++ )
+    {
+        org::codefool::hexpaper::Offset off = h.delta( (org::codefool::hexpaper::Facing)f );
+        std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
+    }
 
-    cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 	return 0;
 }

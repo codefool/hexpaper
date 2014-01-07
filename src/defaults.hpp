@@ -23,6 +23,7 @@ private:
 
 public:
     static _defaults& instance();
+    const signed char gridOrientation() const;
     const bool isOddGrid() const;
     bool setOddGrid(bool val);
     const bool isClippingOn() const;

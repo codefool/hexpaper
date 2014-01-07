@@ -1,4 +1,4 @@
-// hexpaper - library for working with hexagon grids
+// hexpaper - library for working with hexagon grids 
 //
 // Copyright (C) 2014 Garyl Hester
 //
@@ -30,8 +30,8 @@ Hex& hexAtVector( int col, int row, Vector& v );
 Hex& hexAtVector( Hex& org, Vector& v );
 Vector& vector2Hex( Hex& org, Hex& dst ); 
 std::vector<Hex> hexField( Hex& org, int minRange = 0, int maxRange = 0 );
-
-
+std::vector<Hex> hexPath( Hex& org, Hex& dst );
+std::vector<Hex> hexPath( Hex& org, Vector& v );
 
 } // end ns hexpaper
 } // end ns codefool

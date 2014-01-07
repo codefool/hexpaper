@@ -26,6 +26,11 @@ _defaults& _defaults::instance()
 	return instance;
 }
 
+const signed char _defaults::gridOrientation() const
+{
+    return oddGrid ? 0 : 1;
+}
+
 const bool _defaults::isOddGrid() const
 {
 	return oddGrid;
