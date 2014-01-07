@@ -38,7 +38,7 @@ Hex::~Hex() {}
 Offset Hex::delta( Facing f ) const
 {
     coord_t dc = _dc[f];
-    coord_t dr = _dr[ IS_ODD( dc ) ^ defaults.gridOrientation() ][f];
+    coord_t dr = _dr[ isOdd( dc ) ^ defaults.gridOrientation() ][f];
     return Offset(dc,dr);
 }
 

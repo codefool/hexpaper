@@ -40,10 +40,19 @@ enum Facing
     FACING_FA
 };
 
+enum Quadrant
+{
+    QUAD_0,
+    QUAD_1,
+    QUAD_2,
+    QUAD_3,
+    QUAD_CNT
+};
+
 struct Vector
 {
 	Facing _facing;
-	int	   _distance;
+	int	   _range;
 };
 
 class Offset

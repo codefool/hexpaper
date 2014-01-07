@@ -48,8 +48,8 @@ namespace hexpaper {
 extern coord_t _dc[6];
 extern coord_t _dr[][6];
 
-#define IS_ODD(x) (((x)&0x1)==0)
-#define IS_EVEN(x) (!IS_ODD(x))
+template <typename T> T isOdd(T x)  { return (T)((x&0x1)==0); }
+template <typename T> T isEven(T x) { return (T)(!isOdd(x)); }
 
 } // end ns hexpaper
 } // end ns codefool
