@@ -28,14 +28,26 @@ _defaults& _defaults::instance()
 
 const bool _defaults::isOddGrid() const
 {
-	return this->oddGrid;
+	return oddGrid;
 }
 
-bool _defaults::setOddGrid(bool val)
+bool _defaults::setOddGrid( bool val )
 {
-	std::swap(oddGrid, val);
+	std::swap( oddGrid, val );
 	return val;
 }
+
+const bool _defaults::isClippingOn() const
+{
+	return clippingOn;
+}
+
+bool _defaults::setClipping( bool val )
+{
+	std::swap( clippingOn, val );
+	return val;
+}
+
 
 _defaults & defaults = _defaults::instance();
 

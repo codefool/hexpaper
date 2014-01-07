@@ -7,15 +7,8 @@
 //============================================================================
 
 #include <iostream>
-#include "defaults.hpp"
+#include "hexpaper"
 using namespace std;
-
-namespace org {
-namespace codefool {
-namespace hexpaper {
-} // end ns hexpaper
-} // end ns codefool
-} // end ns org
 
 int main() {
     org::codefool::hexpaper::defaults.setOddGrid( true );

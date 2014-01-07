@@ -25,6 +25,8 @@ public:
     static _defaults& instance();
     const bool isOddGrid() const;
     bool setOddGrid(bool val);
+    const bool isClippingOn() const;
+    bool setClipping(bool val);
 };
 
 extern _defaults& defaults;		// forward decl

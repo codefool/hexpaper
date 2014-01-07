@@ -1,0 +1,40 @@
+// hexpaper - library for working with hexagon grids
+//
+// Copyright (C) 2014 Garyl Hester
+//
+// This is the main header file. It includes the various
+// components of the library and defines the following
+// namespaces:
+// 
+// org::codefool::hexpaper - main namespace
+// - defaults              - defaults for hexpaper processing
+//
+// methods:
+//  hexAtVector
+//
+//
+#ifndef HEXPAPER_INCLUDED_
+#define HEXPAPER_INCLUDED_
+
+#include <vector>
+
+#include "constants.hpp"
+#include "datatypes.hpp"
+#include "defaults.hpp"
+
+namespace org {
+namespace codefool {
+namespace hexpaper {
+
+Hex& hexAtVector( int col, int row, Vector& v );
+Hex& hexAtVector( Hex& org, Vector& v );
+Vector& vector2Hex( Hex& org, Hex& dst ); 
+std::vector<Hex> hexField( Hex& org, int minRange = 0, int maxRange = 0 );
+
+
+
+} // end ns hexpaper
+} // end ns codefool
+} // end ns org
+
+#endif // HEXPAPER_INCLUDED_
