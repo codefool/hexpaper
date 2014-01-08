@@ -30,29 +30,25 @@ class Facing
 public:
     enum Face
     {
-        FACING_A = 0,
-        FACING_B,
-        FACING_C,
-        FACING_D,
-        FACING_E,
-        FACING_F,
-        FACING_CNT
+        FACE_A = 0,
+        FACE_B,
+        FACE_C,
+        FACE_D,
+        FACE_E,
+        FACE_F,
+        FACE_CNT
     };
 
-    Facing( Face f )
+    Facing( Face f = FACE_A )
     : _face(f)
     {}
 
     Face face( void ) const { return _face; }
 
-private:
-    Face    _face;
-
-public:
-    class iterator : public std::iterator<std::bidirectional_iterator_tag, Face>
+    class iterator : public std::iterator<std::forward_iterator_tag, Face>
     {
     public:
-        iterator( const Face face = FACING_A )
+        iterator( const Face face = FACE_A )
         : _face{ face }, _cur{ face }, _cnt{ 0 }
         {}
 
@@ -77,10 +73,12 @@ public:
 
         iterator operator++()
         {
-            if( _cnt < FACING_CNT )
+            if( _cnt < FACE_CNT-1 )
             {
-                _cur = (Face)(( _face + ++_cnt ) % FACING_CNT );
+                _cur = (Face)(( _face + ++_cnt ) % FACE_CNT );
             }
+            else
+                _cur = FACE_CNT;
             return *this;
         }
 
@@ -91,22 +89,6 @@ public:
             return old;
         }
 
-        iterator operator--()
-        {
-            if( _cnt > 0 )
-            {
-                _cur = (Face)(( _face + --_cnt ) % FACING_CNT );
-            }
-            return *this;
-        }
-
-        iterator operator--(int)
-        {
-            iterator old(*this);
-            --(*this);
-            return old;
-        }
-
         iterator begin()
         {
             return iterator( _face );
@@ -114,14 +96,28 @@ public:
 
         iterator end()
         {
-            return iterator( (Face)-1 );
+            return iterator( FACE_CNT );
         }
+
+        iterator next()
+        {
+            return ++(*this);
+        }
+
 
     private:
         Face _face;
         Face _cur;
         int  _cnt;
     };
+
+    iterator begin() { return Facing::iterator( _face ); }
+    iterator end()   { return Facing::iterator( FACE_CNT ); }
+
+private:
+    Face    _face;
+
+public:
 };
 
 enum Quadrant

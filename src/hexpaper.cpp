@@ -14,13 +14,13 @@ using namespace org::codefool::hexpaper;
 
 int main() {
     Hex h(5,5);
-    for( int f = Facing::FACING_A; f < Facing::FACING_CNT; f++ )
+    for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
     {
         Offset off = h.delta( (Facing::Face)f );
         std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
     }
     defaults.setOddGrid( true );
-    for( int f = Facing::FACING_A; f < Facing::FACING_CNT; f++ )
+    for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
     {
         Offset off = h.delta( (Facing::Face)f );
         std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
@@ -31,9 +31,12 @@ int main() {
     std::cout << "isEven('1') " << org::codefool::hexpaper::isEven('1') << ' ' << org::codefool::hexpaper::isOdd('1') << std::endl;
     std::cout << "isEven(std::string('1')) " << org::codefool::hexpaper::isEven(std::string("1")) << ' ' << org::codefool::hexpaper::isOdd(std::string("1")) << std::endl;
 
-    //auto i = Facing::iterator();
-    //for( auto x : i )
-    //    std::cout << x << std::endl;
+    for( auto y : Facing() )
+    {
+        std::cout << "iterating face " << y << std::endl;
+        for( auto x : Facing{ y } )
+            std::cout << x << std::endl;
+    }
 
 	return 0;
 }
