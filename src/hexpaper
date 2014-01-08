@@ -27,38 +27,38 @@ namespace codefool {
 namespace hexpaper {
 
 // determine the hex from (col,row) at Vector relative to the given face.
-Hex& hexAtVector( coord_t col, coord_t row, Vector& v, Facing face = FACING_A );
+Hex& hexAtVector( const coord_t col, const coord_t row, const Vector& v, const Facing face = FACING_A );
 
 // determine the hex from origin hex at Vector relative to the given face.
-Hex& hexAtVector( Hex& org, Vector& v, Facing face = FACING_A );
+Hex& hexAtVector( const Hex& org, const Vector& v, const Facing face = FACING_A );
 
 // Determine the vector required to get from the origin hex to destination hex
 // relative to the given face.
-Vector& vectorToHex( Hex& org, Hex& dst, Facing face = FACING_A );
+Vector& vectorToHex( const Hex& org, const Hex& dst, const Facing face = FACING_A );
 
 // determine the circular field between minRange and maxRange hex's from
 // origin hex.
-std::vector<Hex> hexCircField( Hex& org, int minRange = 0, int maxRange = 0 );
+std::vector<Hex> hexCircField( const Hex& org, const int minRange = 0, const int maxRange = 0 );
 
 // determine the hexdrant for the origin hex, at the given Facing(s), relative to
 // the provided face, for range hex's.
-std::vector<Hex> hexdrant( Hex& org, std::vector<Facing>&faces, int range, Facing face = FACING_A );
+std::vector<Hex> hexdrant( const Hex& org, const std::vector<Facing>&faces, const int range, const Facing face = FACING_A );
 
 // determine the hexdrant for the origin hex, at the given Facing, relative to
 // the provided face, for range hex's.
-std::vector<Hex> hexdrant( Hex& org, Facing facing, int range, Facing face = FACING_A );
+std::vector<Hex> hexdrant( const Hex& org, const Facing facing, const int range, const Facing face = FACING_A );
 
 // determine the quadrant(s) for the origin hex relative to the given face.
-std::vector<Hex> quadrant( Hex & org, std::vector<Quadrant> quads, int range, Facing face = FACING_A );
+std::vector<Hex> quadrant( const Hex& org, const std::vector<Quadrant> quads, const int range, const Facing face = FACING_A );
 
 // determine the quadrant for the origin hex relative to the given face.
-std::vector<Hex> quadrant( Hex & org, Quadrant quad, int range, Facing face = FACING_A );
+std::vector<Hex> quadrant( const Hex& org, const Quadrant quad, const int range, const Facing face = FACING_A );
 
 // determine the hex's that exist between the origin and destination hex's, inclusive.
-std::vector<Hex> hexPath( Hex& org, Hex& dst );
+std::vector<Hex> hexPath( const Hex& org, const Hex& dst );
 
 // determine the hex's that exist from the origin at the given Vector, relative to the given face.
-std::vector<Hex> hexPath( Hex& org, Vector& v, Facing face = FACING_A );
+std::vector<Hex> hexPath( const Hex& org, const Vector& v, const Facing face = FACING_A );
 
 // makeHexField is used to create a list of arbitrary hex's which are relative
 // to an origin hex. This uses a navigate/pen up/pen down approach. Path contains
@@ -77,7 +77,7 @@ std::vector<Hex> hexPath( Hex& org, Vector& v, Facing face = FACING_A );
 //
 // The pen is initially UP.
 //
-std::vector<Hex> makeHexField( Hex& org, std::string path, Facing face = FACING_A );
+std::vector<Hex> makeHexField( const Hex& org, const std::string& path, const Facing face = FACING_A );
 
 } // end ns hexpaper
 } // end ns codefool
