@@ -35,7 +35,7 @@ Hex::~Hex() {}
 
 // return an Offset which contains the delta col and row
 // for this Hex object at the given facing
-Offset Hex::delta( Facing f ) const
+Offset Hex::delta( Facing::Face f ) const
 {
     coord_t dc = _dc[f];
     coord_t dr = _dr[ isOdd( dc ) ^ defaults.gridOrientation() ][f];

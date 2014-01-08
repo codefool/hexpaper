@@ -8,6 +8,8 @@
 #ifndef DATATYPES_HPP_
 #define DATATYPES_HPP_
 
+#include <iterator>
+
 namespace org {
 namespace codefool {
 namespace hexpaper {
@@ -23,21 +25,103 @@ typedef signed char coord_t;
 //  \___/ D \___/
 //      \___/
 //
-enum Facing
+class Facing
 {
-    FACING_A = 0,
-    FACING_B,
-    FACING_C,
-    FACING_D,
-    FACING_E,
-    FACING_F,
-    FACING_CNT,
-    FACING_AB,
-    FACING_BC,
-    FACING_CD,
-    FACING_DE,
-    FACING_EF,
-    FACING_FA
+public:
+    enum Face
+    {
+        FACING_A = 0,
+        FACING_B,
+        FACING_C,
+        FACING_D,
+        FACING_E,
+        FACING_F,
+        FACING_CNT
+    };
+
+    Facing( Face f )
+    : _face(f)
+    {}
+
+    Face face( void ) const { return _face; }
+
+private:
+    Face    _face;
+
+public:
+    class iterator : public std::iterator<std::bidirectional_iterator_tag, Face>
+    {
+    public:
+        iterator( const Face face = FACING_A )
+        : _face{ face }, _cur{ face }, _cnt{ 0 }
+        {}
+
+        iterator( const iterator& other )
+        : _face{other._face}, _cur{ other._cur },_cnt{other._cnt}
+        {}
+
+        bool operator==( const iterator& other ) const
+        {
+            return _cur == other._cur;
+        }
+
+        bool operator !=(const iterator& other ) const
+        {
+            return _cur != other._cur;
+        }
+
+        Face operator*()
+        {
+            return _cur;
+        }
+
+        iterator operator++()
+        {
+            if( _cnt < FACING_CNT )
+            {
+                _cur = (Face)(( _face + ++_cnt ) % FACING_CNT );
+            }
+            return *this;
+        }
+
+        iterator operator++(int)
+        {
+            iterator old(*this);
+            ++(*this);
+            return old;
+        }
+
+        iterator operator--()
+        {
+            if( _cnt > 0 )
+            {
+                _cur = (Face)(( _face + --_cnt ) % FACING_CNT );
+            }
+            return *this;
+        }
+
+        iterator operator--(int)
+        {
+            iterator old(*this);
+            --(*this);
+            return old;
+        }
+
+        iterator begin()
+        {
+            return iterator( _face );
+        }
+
+        iterator end()
+        {
+            return iterator( (Face)-1 );
+        }
+
+    private:
+        Face _face;
+        Face _cur;
+        int  _cnt;
+    };
 };
 
 enum Quadrant
@@ -77,7 +161,7 @@ public:
 	Hex( coord_t col, coord_t row);
 	Hex( Offset& off );
 	~Hex();
-	Offset delta(Facing f) const;
+	Offset delta(Facing::Face f) const;
 };
 
 } // end ns hexpaper

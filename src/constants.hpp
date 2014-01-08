@@ -4,6 +4,7 @@
  *  Created on: Jan 6, 2014
  *      Author: ghester
  */
+#include <string>
 #include "datatypes.hpp"
 
 #ifndef CONSTANTS_HPP_
@@ -48,8 +49,17 @@ namespace hexpaper {
 extern coord_t _dc[6];
 extern coord_t _dr[][6];
 
-template <typename T> T isOdd(T x)  { return (T)((x&0x1)==0); }
-template <typename T> T isEven(T x) { return (T)(!isOdd(x)); }
+template <typename T>
+int isOdd(T x)  { return (int)((x&0x1)==1); }
+
+template <>
+int isOdd<char *>(char *c);
+
+template <>
+int isOdd<std::string>(std::string s);
+
+template <typename T>
+int isEven(T x) { return (int)(!isOdd(x)); }
 
 } // end ns hexpaper
 } // end ns codefool

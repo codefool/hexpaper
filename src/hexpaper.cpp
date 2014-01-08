@@ -7,22 +7,33 @@
 //============================================================================
 
 #include <iostream>
+#include <string>
 #include "hexpaper"
 using namespace std;
+using namespace org::codefool::hexpaper;
 
 int main() {
-    org::codefool::hexpaper::Hex h(5,5);
-    for( int f = org::codefool::hexpaper::FACING_A; f < org::codefool::hexpaper::FACING_CNT; f++ )
+    Hex h(5,5);
+    for( int f = Facing::FACING_A; f < Facing::FACING_CNT; f++ )
     {
-        org::codefool::hexpaper::Offset off = h.delta( (org::codefool::hexpaper::Facing)f );
+        Offset off = h.delta( (Facing::Face)f );
         std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
     }
-    org::codefool::hexpaper::defaults.setOddGrid( true );
-    for( int f = org::codefool::hexpaper::FACING_A; f < org::codefool::hexpaper::FACING_CNT; f++ )
+    defaults.setOddGrid( true );
+    for( int f = Facing::FACING_A; f < Facing::FACING_CNT; f++ )
     {
-        org::codefool::hexpaper::Offset off = h.delta( (org::codefool::hexpaper::Facing)f );
+        Offset off = h.delta( (Facing::Face)f );
         std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
     }
+
+    std::cout << "isEven(0)   " << org::codefool::hexpaper::isEven(0) << ' ' << org::codefool::hexpaper::isOdd(0) << std::endl;
+    std::cout << "isEven(1)   " << org::codefool::hexpaper::isEven(1) << ' ' << org::codefool::hexpaper::isOdd(1) << std::endl;
+    std::cout << "isEven('1') " << org::codefool::hexpaper::isEven('1') << ' ' << org::codefool::hexpaper::isOdd('1') << std::endl;
+    std::cout << "isEven(std::string('1')) " << org::codefool::hexpaper::isEven(std::string("1")) << ' ' << org::codefool::hexpaper::isOdd(std::string("1")) << std::endl;
+
+    //auto i = Facing::iterator();
+    //for( auto x : i )
+    //    std::cout << x << std::endl;
 
 	return 0;
 }
