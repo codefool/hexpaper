@@ -51,5 +51,15 @@ int main() {
     for( auto h : w.trail() )
         std::cout << h;
     std::cout << std::endl;
+    w.sort();
+    for( auto h : w.trail() )
+        std::cout << h;
+    std::cout << std::endl;
+
+    std::vector<Hex> q = hexCircField( Hex{5,5}, 2, 3 );
+    for( auto h : q )
+        std::cout << h;
+    std::cout << std::endl;
+
 	return 0;
 }

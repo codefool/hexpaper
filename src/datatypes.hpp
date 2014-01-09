@@ -172,7 +172,7 @@ private:
 class HexWalker
 {
 public:
-    HexWalker( Hex& hex );
+    HexWalker( const Hex& hex );
     HexWalker( const HexWalker& obj );
 
     // walk the hex around
@@ -188,6 +188,7 @@ public:
     void push( void );
     void pop( void );
     void move( Facing::Face dir, int cnt );
+    void sort( void );
     std::vector<Hex> trail( void ) const;
 
 private:
@@ -196,7 +197,6 @@ private:
     std::deque<Hex>  _stack;
     bool             _penDown;
 };
-
 
 } // end ns hexpaper
 } // end ns codefool

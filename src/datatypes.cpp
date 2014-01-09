@@ -67,7 +67,7 @@ std::ostream& operator << ( std::ostream& os, const Hex& hex )
 }
 
 // HexWalker
-HexWalker::HexWalker( Hex& hex )
+HexWalker::HexWalker( const Hex& hex )
 : _h{ hex }, _penDown{ false }
 {}
 
@@ -144,11 +144,40 @@ void HexWalker::move( Facing::Face dir, int cnt )
     }
 }
 
+// sort the trail
+void HexWalker::sort( void )
+{
+    std::sort(_trail.begin(), _trail.end(),
+        [](Hex a, Hex b)
+        {
+            if( a.col() == b.col() )
+                return a.row() < b.row();
+            else
+                return a.col() < b.col();
+        }
+    );
+}
+
 std::vector<Hex> HexWalker::trail( void ) const
 {
     return _trail;
 }
 
+std::vector<Hex> hexCircField( const Hex& org, const int innerRadius, const int outerRadius)
+{
+    HexWalker w( org );
+    w.move( Facing::FACE_A, innerRadius-1 );
+    for( int r{ innerRadius }; r <= outerRadius; ++r )
+    {
+        w.move( Facing::FACE_A, 1 );
+        w.penDown();
+        for( auto f : Facing{Facing::FACE_C} )
+            w.move( f, r );
+        w.penUp();
+    }
+    //w.sort();
+    return w.trail();
+}
 
 } // end ns hexpaper
 } // end ns codefool
