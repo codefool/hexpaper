@@ -18,9 +18,7 @@ Facing::Facing( Face f )
 
 Facing& Facing::operator+( const Facing& f )
 {
-    std::cout << "Adding " << f.face() << " to " << _face;
     _face = (Facing::Face)( ( _face + f.face() ) % FACE_CNT );
-    std::cout << " equals " << _face << std::endl;
     return *this;
 }
 
@@ -54,11 +52,11 @@ Offset Hex::delta( Facing::Face f ) const
     return Offset(dc,dr);
 }
 
-Hex& Hex::move( Facing::Face dir, int distance )
+Hex& Hex::move( Facing::Face dir, int distance, Facing::Face bias )
 {
     while( distance-- )
     {
-        Offset off = delta( dir );
+        Offset off = delta( (Facing::Face)( ( dir + bias ) % Facing::FACE_CNT ) );
         _col += off.dc();
         _row += off.dr();
     }
@@ -90,6 +88,11 @@ HexWalker::HexWalker( const HexWalker& obj )
 ,  _penDown{ obj._penDown }
 {}
 
+void HexWalker::setOrigin( const Hex& hex )
+{
+    _h = hex;
+    penUp();
+}
 
 // walk the hex around
 //     n   - list of digits - repeat the following command n times.
@@ -147,12 +150,12 @@ void HexWalker::pop( void )
     _stack.pop_back();
 }
 
-void HexWalker::move( Facing::Face dir, int cnt )
+void HexWalker::move( Facing::Face dir, int cnt, Facing::Face bias )
 {
     if( !cnt ) cnt=1;
     while( cnt-- )
     {
-        _h.move(dir,1);
+        _h.move(dir,1,bias);
         if( _penDown )
             _trail.push_back( _h );
     }
@@ -172,7 +175,7 @@ void HexWalker::sort( void )
     );
 }
 
-std::vector<Hex> HexWalker::trail( void ) const
+const std::vector<Hex>& HexWalker::trail( void ) const
 {
     return _trail;
 }
@@ -191,6 +194,61 @@ std::vector<Hex> hexCircField( const Hex& org, const int innerRadius, const int 
     }
     w.sort();
     return w.trail();
+}
+
+std::vector<Hex> hexdrant( const Hex& org, const Facing bias, const int range )
+{
+    HexWalker w0( org );
+    HexWalker w1( org );
+    // a-f (biased) pattern up to range hexes out, then a-b (biased) pattern up to range
+    Facing::Face p[2] = { Facing::FACE_A, Facing::FACE_F };
+    Facing::Face q[2] = { Facing::FACE_A, Facing::FACE_B };
+    w0.penDown();
+    w1.penDown();
+    for( auto i = 0; i < range; ++i )
+    {
+        w0.move( p[isOdd(i)], 1, bias.face() );
+        w1.move( q[isOdd(i)], 1, bias.face() );
+    }
+    // we now need to include all the hex's bounded by these two lines.
+    // Each vector *must* have the same number of hex's in it, and either
+    // their rows or columns will match. Handle this.
+    //
+    // THIS DOES NOT WORK
+    //
+    std::vector<Hex> tweens;
+    auto i0 = w0.trail().begin();
+    for( auto h1 : w1.trail() )
+    {
+        Hex h0{ *i0++ };
+        if( h0.row() == h1.row() )
+        {
+            // include all hex's on the same row between the two columns.
+            for( auto col = std::min(h0.col(),h1.col()) + 1; col < std::max(h0.col(),h1.col()); ++col )
+                tweens.push_back( Hex{ h0.row(), col } );
+        }
+        else // if( h0.col() == h1.col() )
+        {
+            // include all hex's in the same column between the two rows.
+            for( auto row = std::min(h0.row(),h1.row()) + 1; row < std::max(h0.row(),h1.row()); ++row )
+                tweens.push_back( Hex{ row, h0.col() } );
+        }
+    }
+    std::cout << "w0:";
+    for( auto h : w0.trail() )
+        std::cout << h;
+    std::cout << std::endl;
+    std::cout << "tweens:";
+    for( auto h : tweens )
+        std::cout << h;
+    std::cout << std::endl;
+    std::cout << "w1:";
+    for( auto h : w1.trail() )
+        std::cout << h;
+    std::cout << std::endl;
+
+
+    return w0.trail();
 }
 
 } // end ns hexpaper

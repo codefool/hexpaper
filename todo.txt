@@ -1,0 +1,4 @@
+1. Need better means to store hex fields to test for duplicates. Should be able to accomplish this with an array of bit-vectors?
+2. Project structure sucks. Will most likely re-structure all of this and replace the repository with clean code rather than store all the refactoring pollution for posterity.
+3. Need a better strategy for performing facing bias.
+4. Fix hexdrant.

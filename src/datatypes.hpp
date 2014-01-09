@@ -13,6 +13,8 @@
 #include <iterator>
 #include <vector>
 #include <deque>
+#include <map>
+#include <array>
 
 namespace org {
 namespace codefool {
@@ -159,7 +161,7 @@ public:
 	coord_t row( void ) const { return _row; }
 	coord_t col( void ) const { return _col; }
 	Offset delta(Facing::Face f) const;
-	Hex& move( Facing::Face dir, int distance = 1 );
+	Hex& move( Facing::Face dir, int distance = 1, Facing::Face bias = Facing::FACE_A );
 	Hex& operator+( const Offset& off );
 	friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
 private:
@@ -173,6 +175,7 @@ public:
     HexWalker( const Hex& hex );
     HexWalker( const HexWalker& obj );
 
+    void setOrigin( const Hex& hex );
     // walk the hex around
     //     n   - list of digits - repeat the following command n times.
     //     A-F - move pen in that direction relative to face.
@@ -185,9 +188,9 @@ public:
     void penDown( void );
     void push( void );
     void pop( void );
-    void move( Facing::Face dir, int cnt );
+    void move( Facing::Face dir, int cnt, Facing::Face bias = Facing::FACE_A );
     void sort( void );
-    std::vector<Hex> trail( void ) const;
+    const std::vector<Hex>& trail( void ) const;
 
 private:
     Hex              _h;

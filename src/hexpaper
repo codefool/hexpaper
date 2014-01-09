@@ -46,7 +46,7 @@ std::vector<Hex> hexdrant( const Hex& org, const std::vector<Facing>&faces, cons
 
 // determine the hexdrant for the origin hex, at the given Facing, relative to
 // the provided face, for range hex's.
-std::vector<Hex> hexdrant( const Hex& org, const Facing facing, const int range, const Facing::Face bias = Facing::FACE_A );
+std::vector<Hex> hexdrant( const Hex& org, const Facing bias, const int range );
 
 // determine the quadrant(s) for the origin hex relative to the given face.
 std::vector<Hex> quadrant( const Hex& org, const std::vector<Quadrant> quads, const int range, const Facing::Face bias = Facing::FACE_A );

@@ -104,5 +104,12 @@ int main() {
             std::cout << h;
         std::cout << std::endl;
     }
+    {
+        std::cout << "hexdrant no bias" << std::endl;
+        std::vector<Hex> x = hexdrant( Hex{5,5}, Facing(), 5 );
+        for( auto h : x )
+            std::cout << h;
+        std::cout << std::endl;
+    }
 	return 0;
 }

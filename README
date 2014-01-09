@@ -1,7 +1,6 @@
-// Hexpaper - library for working with hexpaper grids
-namespace org {
-namespace codefool {
-namespace hexpaper {
-} // end hexpaper
-} // end codefool
-} // end org
+Hexpaper - library for working with hexpaper grids
+
+**INCUBATION** **INCUBATION** **INCUBATION** **INCUBATION** **INCUBATION**
+
+This is primarly useful for working with hex-based board games, but 
+I suppose it can have other uses, too.
