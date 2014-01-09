@@ -43,10 +43,8 @@ public:
         FACE_CNT
     };
 
-    Facing( Face f = FACE_A )
-    : _face(f)
-    {}
-
+    Facing( Face f = FACE_A );
+    Facing& operator+( const Facing& f );
     Face face( void ) const { return _face; }
 
     class iterator : public std::iterator<std::forward_iterator_tag, Face>
@@ -182,7 +180,7 @@ public:
     //     U   - pen up   (stop recording hex's.)
     //     M   - mark - push this hex on the stack.
     //     R   - recall - pop hex off the stack (and make that hex the current hex.)
-    void walk( std::string&& path );
+    void walk( std::string&& path, Facing::Face bias = Facing::FACE_A );
     void penUp( void );
     void penDown( void );
     void push( void );

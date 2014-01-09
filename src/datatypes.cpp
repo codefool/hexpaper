@@ -12,6 +12,18 @@ namespace org {
 namespace codefool {
 namespace hexpaper {
 
+Facing::Facing( Face f )
+: _face(f)
+{}
+
+Facing& Facing::operator+( const Facing& f )
+{
+    std::cout << "Adding " << f.face() << " to " << _face;
+    _face = (Facing::Face)( ( _face + f.face() ) % FACE_CNT );
+    std::cout << " equals " << _face << std::endl;
+    return *this;
+}
+
 Offset::Offset( coord_t c, coord_t r )
 : _dc( c ), _dr( r )
 {}
@@ -86,10 +98,11 @@ HexWalker::HexWalker( const HexWalker& obj )
 //     U   - pen up   (stop recording hex's.)
 //     M   - mark - push this hex on the stack.
 //     R   - recall - pop hex off the stack (and make that hex the current hex.)
-void HexWalker::walk( std::string&& path )
+void HexWalker::walk( std::string&& path, Facing::Face bias )
 {
     std::transform(path.begin(), path.end(), path.begin(), ::tolower);
     int cnt{0};
+    Facing b{bias};
     for( char c : path )
     {
         if( '0' <= c && c <= '9' )
@@ -98,7 +111,8 @@ void HexWalker::walk( std::string&& path )
         }
         else if( 'a' <= c && c <= 'f' )
         {
-            move( (Facing::Face)( c - 'a'), cnt );
+            Facing f{(Facing::Face)( c - 'a')};
+            move( (f+b).face(), cnt );
             cnt = 0;
         }
         else
@@ -175,7 +189,7 @@ std::vector<Hex> hexCircField( const Hex& org, const int innerRadius, const int 
             w.move( f, r );
         w.penUp();
     }
-    //w.sort();
+    w.sort();
     return w.trail();
 }
 

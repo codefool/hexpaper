@@ -45,21 +45,64 @@ int main() {
         std::cout << y << ':' << h;
     }
     std::cout << std::endl;
-    settings.setOddGrid( false );
-    HexWalker w(h);
-    w.walk(std::string("aap2c2d2e2f2a2bu2d"));
-    for( auto h : w.trail() )
-        std::cout << h;
-    std::cout << std::endl;
-    w.sort();
-    for( auto h : w.trail() )
-        std::cout << h;
-    std::cout << std::endl;
+    {
+        HexWalker w(h);
+        w.walk(std::string("aap2c2d2e2f2a2bu2d"));
+        for( auto h : w.trail() )
+            std::cout << h;
+        std::cout << std::endl;
+        w.sort();
+        for( auto h : w.trail() )
+            std::cout << h;
+        std::cout << std::endl;
 
-    std::vector<Hex> q = hexCircField( Hex{5,5}, 2, 3 );
-    for( auto h : q )
-        std::cout << h;
-    std::cout << std::endl;
+        std::vector<Hex> q = hexCircField( Hex{5,5}, 2, 3 );
+        for( auto h : q )
+            std::cout << h;
+        std::cout << std::endl;
+    }
 
+    {
+        HexWalker w( Hex{5,1} );
+        w.walk( std::string( "p3dme2drc2d") );
+        for( auto h : w.trail() )
+            std::cout << h;
+        std::cout << std::endl;
+    }
+    {
+        HexWalker w( Hex{8,1} );
+        w.walk( std::string( "p3dme2drc2d"), Facing::FACE_B );
+        for( auto h : w.trail() )
+            std::cout << h;
+        std::cout << std::endl;
+    }
+    {
+        HexWalker w( Hex{8,5} );
+        w.walk( std::string( "p3dme2drc2d"), Facing::FACE_C );
+        for( auto h : w.trail() )
+            std::cout << h;
+        std::cout << std::endl;
+    }
+    {
+        HexWalker w( Hex{5,10} );
+        w.walk( std::string( "p3dme2drc2d"), Facing::FACE_D );
+        for( auto h : w.trail() )
+            std::cout << h;
+        std::cout << std::endl;
+    }
+    {
+        HexWalker w( Hex{1,10} );
+        w.walk( std::string( "p3dme2drc2d"), Facing::FACE_E );
+        for( auto h : w.trail() )
+            std::cout << h;
+        std::cout << std::endl;
+    }
+    {
+        HexWalker w( Hex{1,5} );
+        w.walk( std::string( "p3dme2drc2d"), Facing::FACE_F );
+        for( auto h : w.trail() )
+            std::cout << h;
+        std::cout << std::endl;
+    }
 	return 0;
 }
