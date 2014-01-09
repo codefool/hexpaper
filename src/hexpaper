@@ -20,7 +20,7 @@
 
 #include "constants.hpp"
 #include "datatypes.hpp"
-#include "defaults.hpp"
+#include "settings.hpp"
 
 namespace org {
 namespace codefool {

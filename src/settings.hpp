@@ -5,24 +5,24 @@
  *      Author: ghester
  */
 
-#ifndef DEFAULTS_HPP_
-#define DEFAULTS_HPP_
+#ifndef SETTINGS_HPP_
+#define SETTINGS_HPP_
 
 namespace org {
 namespace codefool {
 namespace hexpaper {
 
-class _defaults
+class _settings
 {
 private:
     bool oddGrid;   	// true if grid is odd-oriented, false if even
     bool clippingOn;	// true if clipping is on
 
-    _defaults();
-    ~_defaults();
+    _settings();
+    ~_settings();
 
 public:
-    static _defaults& instance();
+    static _settings& instance();
     const signed char gridOrientation() const;
     const bool isOddGrid() const;
     bool setOddGrid(bool val);
@@ -30,7 +30,7 @@ public:
     bool setClipping(bool val);
 };
 
-extern _defaults& defaults;		// forward decl
+extern _settings& settings;		// forward decl
 
 } // end ns hexpaper
 } // end ns codefool
@@ -39,4 +39,4 @@ extern _defaults& defaults;		// forward decl
 
 
 
-#endif /* DEFAULTS_HPP_ */
+#endif /* SETTINGS_HPP_ */

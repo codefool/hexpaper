@@ -19,7 +19,7 @@ int main() {
         Offset off = h.delta( (Facing::Face)f );
         std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
     }
-    defaults.setOddGrid( true );
+    settings.setOddGrid( true );
     for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
     {
         Offset off = h.delta( (Facing::Face)f );
@@ -38,5 +38,18 @@ int main() {
             std::cout << x << std::endl;
     }
 
+    std::cout << h;
+    for( auto y : Facing() )
+    {
+        h.move( y );
+        std::cout << y << ':' << h;
+    }
+    std::cout << std::endl;
+    settings.setOddGrid( false );
+    HexWalker w(h);
+    w.walk(std::string("aap2c2d2e2f2a2bu2d"));
+    for( auto h : w.trail() )
+        std::cout << h;
+    std::cout << std::endl;
 	return 0;
 }

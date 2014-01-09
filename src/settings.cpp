@@ -6,55 +6,55 @@
 //
 //
 #include <algorithm>
-#include "defaults.hpp"
+#include "settings.hpp"
 
 namespace org {
 namespace codefool {
 namespace hexpaper {
 
-_defaults::_defaults()
+_settings::_settings()
     : oddGrid( false )
     , clippingOn( true )
     {}
 
-_defaults::~_defaults()
+_settings::~_settings()
 {}
 
-_defaults& _defaults::instance()
+_settings& _settings::instance()
 {
-	static _defaults instance;
+	static _settings instance;
 	return instance;
 }
 
-const signed char _defaults::gridOrientation() const
+const signed char _settings::gridOrientation() const
 {
     return oddGrid ? 0 : 1;
 }
 
-const bool _defaults::isOddGrid() const
+const bool _settings::isOddGrid() const
 {
 	return oddGrid;
 }
 
-bool _defaults::setOddGrid( bool val )
+bool _settings::setOddGrid( bool val )
 {
 	std::swap( oddGrid, val );
 	return val;
 }
 
-const bool _defaults::isClippingOn() const
+const bool _settings::isClippingOn() const
 {
 	return clippingOn;
 }
 
-bool _defaults::setClipping( bool val )
+bool _settings::setClipping( bool val )
 {
 	std::swap( clippingOn, val );
 	return val;
 }
 
 
-_defaults & defaults = _defaults::instance();
+_settings & settings = _settings::instance();
 
 } // end ns hexpaper
 } // end ns codefool

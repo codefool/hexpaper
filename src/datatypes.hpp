@@ -8,13 +8,17 @@
 #ifndef DATATYPES_HPP_
 #define DATATYPES_HPP_
 
+#include <iostream>
+#include <algorithm>
 #include <iterator>
+#include <vector>
+#include <deque>
 
 namespace org {
 namespace codefool {
 namespace hexpaper {
 
-typedef signed char coord_t;
+typedef signed int coord_t;
 
 //  Primary Facings:
 //       ___
@@ -137,28 +141,62 @@ struct Vector
 
 class Offset
 {
-private:
-    coord_t _dc;
-    coord_t _dr;
 public:
     Offset(coord_t dc, coord_t dr);
     Offset(const Offset& obj );
     ~Offset();
     inline coord_t dc( void ) const { return _dc; }
     inline coord_t dr( void ) const { return _dr; }
+private:
+    coord_t _dc;
+    coord_t _dr;
 };
 
 class Hex
 {
-private:
-    coord_t	_col;
-    coord_t _row;
 public:
 	Hex( coord_t col, coord_t row);
 	Hex( Offset& off );
-	~Hex();
+	virtual ~Hex();
+	coord_t row( void ) const { return _row; }
+	coord_t col( void ) const { return _col; }
 	Offset delta(Facing::Face f) const;
+	Hex& move( Facing::Face dir, int distance = 1 );
+	Hex& operator+( const Offset& off );
+	friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
+private:
+    coord_t _col;
+    coord_t _row;
 };
+
+class HexWalker
+{
+public:
+    HexWalker( Hex& hex );
+    HexWalker( const HexWalker& obj );
+
+    // walk the hex around
+    //     n   - list of digits - repeat the following command n times.
+    //     A-F - move pen in that direction relative to face.
+    //     P   - pen down (start recording all hex's from current hex on.)
+    //     U   - pen up   (stop recording hex's.)
+    //     M   - mark - push this hex on the stack.
+    //     R   - recall - pop hex off the stack (and make that hex the current hex.)
+    void walk( std::string&& path );
+    void penUp( void );
+    void penDown( void );
+    void push( void );
+    void pop( void );
+    void move( Facing::Face dir, int cnt );
+    std::vector<Hex> trail( void ) const;
+
+private:
+    Hex              _h;
+    std::vector<Hex> _trail;
+    std::deque<Hex>  _stack;
+    bool             _penDown;
+};
+
 
 } // end ns hexpaper
 } // end ns codefool
