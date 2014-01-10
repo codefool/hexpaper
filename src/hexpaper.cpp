@@ -131,14 +131,14 @@ Hex::~Hex() {}
 
 // return an Offset which contains the delta col and row
 // for this Hex object at the given facing
-Offset Hex::delta( Facing f ) const
+Offset Hex::delta( const Facing& f ) const
 {
     coord_t dc = _dc[f];
     coord_t dr = _dr[ isOdd( _col ) ^ settings.gridOrientation() ][f];
     return Offset(dc,dr);
 }
 
-Hex& Hex::move( Facing dir, int distance, Facing bias )
+Hex& Hex::move( const Facing& dir, int distance, const Facing& bias )
 {
     while( distance-- )
     {
@@ -174,7 +174,7 @@ std::ostream& operator << ( std::ostream& os, const Hex& hex )
 
 // HexWalker
 HexWalker::HexWalker( const Hex& hex, const bool noDups )
-: _h{ hex }, _penDown{ false }
+: _h{ hex }, _penDown{ false }, _noDups{ noDups }
 {}
 
 HexWalker::HexWalker( const HexWalker& obj )
@@ -198,7 +198,7 @@ void HexWalker::setOrigin( const Hex& hex )
 //     U   - pen up   (stop recording hex's.)
 //     M   - mark - push this hex on the stack.
 //     R   - recall - pop hex off the stack (and make that hex the current hex.)
-void HexWalker::walk( std::string&& path, Facing bias )
+void HexWalker::walk( std::string&& path, const Facing& bias )
 {
     std::transform(path.begin(), path.end(), path.begin(), ::tolower);
     int cnt{0};
@@ -246,7 +246,7 @@ void HexWalker::pop( void )
     _stack.pop_back();
 }
 
-void HexWalker::move( Facing dir, int cnt, Facing bias )
+void HexWalker::move( const Facing& dir, int cnt, const Facing& bias )
 {
     if( !cnt ) cnt=1;
     while( cnt-- )
@@ -284,7 +284,7 @@ const Hex& HexWalker::hex( void ) const
     return _h;
 }
 
-std::vector<Hex> hexCircField( const Hex& org, const int innerRadius, const int outerRadius)
+const std::vector<Hex>& hexCircField( const Hex& org, const int innerRadius, const int outerRadius)
 {
     HexWalker w( org );
     w.move( _FacingA, innerRadius-1 );
@@ -300,20 +300,16 @@ std::vector<Hex> hexCircField( const Hex& org, const int innerRadius, const int 
     return w.trail();
 }
 
-std::vector<Hex> hexdrant( const Hex& org, const Facing bias, const int range )
+const std::vector<Hex>& hexdrant( const Hex& org, const Facing bias, const int range )
 {
+    // a-f (biased) pattern up to range hex's out,
+    // then a-b (biased) pattern up to range
+    Facing l[2] = { _FacingA >> bias, _FacingF >> bias };
+    Facing r[2] = { _FacingA >> bias, _FacingB >> bias };
+    Facing m[2] = { _FacingC >> bias, _FacingB >> bias };
+
     HexWalker w0( org );
     HexWalker w1( org );
-    // a-f (biased) pattern up to range hex's out, then a-b (biased) pattern up to range
-    Facing l[2];
-    l[0] = _FacingA >> bias;
-    l[1] = _FacingF >> bias;
-    Facing r[2];
-    r[0] = _FacingA >> bias;
-    r[1] = _FacingB >> bias;
-    Facing m[2];
-    m[0] = _FacingC >> bias;
-    m[1] = _FacingB >> bias;
     w0.penDown();
     w1.penDown();
     for( auto i = 0; i < range; ++i )

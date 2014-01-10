@@ -86,6 +86,7 @@ int isEven(T x) { return (int)(!isOdd(x)); }
 //
 class Facing;
 
+// define some handy Facing constants
 extern const Facing _FacingA;
 extern const Facing _FacingB;
 extern const Facing _FacingC;
@@ -195,12 +196,14 @@ private:
     Face    _face;
 };
 
+// Vector - container for direction and distance.
 struct Vector
 {
     Facing _facing;
     int    _range;
 };
 
+// Offset -
 class Offset
 {
 public:
@@ -222,8 +225,8 @@ public:
     virtual ~Hex();
     coord_t row( void ) const { return _row; }
     coord_t col( void ) const { return _col; }
-    Offset delta(Facing f) const;
-    Hex& move( Facing dir, int distance = 1, Facing bias = _FacingA );
+    Offset delta(const Facing& f) const;
+    Hex& move( const Facing& dir, int distance = 1, const Facing& bias = _FacingA );
     Hex& operator+( const Offset& off );
     bool operator==(const Hex& rhs ) const;
     bool operator!=(const Hex& rhs ) const;
@@ -232,7 +235,6 @@ private:
     coord_t _col;
     coord_t _row;
 };
-
 
 class HexWalker
 {
@@ -248,12 +250,12 @@ public:
     //     U   - pen up   (stop recording hex's.)
     //     M   - mark - push this hex on the stack.
     //     R   - recall - pop hex off the stack (and make that hex the current hex.)
-    void walk( std::string&& path, Facing bias = _FacingA );
+    void walk( std::string&& path, const Facing& bias = _FacingA );
     void penUp( void );
     void penDown( void );
     void push( void );
     void pop( void );
-    void move( Facing dir, int cnt, Facing bias = _FacingA );
+    void move( const Facing& dir, int cnt, const Facing& bias = _FacingA );
     void sort( void );
     const std::vector<Hex>& trail( void ) const;
     const Hex& hex( void ) const;
@@ -298,21 +300,21 @@ Vector& vectorToHex( const Hex& org, const Hex& dst, const Facing::Face bias = F
 
 // determine the circular field between minRange and maxRange hex's from
 // origin hex.
-std::vector<Hex> hexCircField( const Hex& org, const int innerRadius = 0, const int outerRadius = 0 );
+const std::vector<Hex>& hexCircField( const Hex& org, const int innerRadius = 0, const int outerRadius = 0 );
 
 // determine the hexdrant for the origin hex, at the given Facing(s), relative to
 // the provided face, for range hex's.
-std::vector<Hex> hexdrant( const Hex& org, const std::vector<Facing>&faces, const int range, const Facing::Face bias = Facing::FACE_A );
+const std::vector<Hex>& hexdrant( const Hex& org, const std::vector<Facing>&faces, const int range, const Facing::Face bias = Facing::FACE_A );
 
 // determine the hexdrant for the origin hex, at the given Facing, relative to
 // the provided face, for range hex's.
-std::vector<Hex> hexdrant( const Hex& org, const Facing bias, const int range );
+const std::vector<Hex>& hexdrant( const Hex& org, const Facing bias, const int range );
 
 // determine the hex's that exist between the origin and destination hex's, inclusive.
-std::vector<Hex> hexPath( const Hex& org, const Hex& dst );
+const std::vector<Hex>& hexPath( const Hex& org, const Hex& dst );
 
 // determine the hex's that exist from the origin at the given Vector, relative to the given face.
-std::vector<Hex> hexPath( const Hex& org, const Vector& v, const Facing::Face bias = Facing::FACE_A );
+const std::vector<Hex>& hexPath( const Hex& org, const Vector& v, const Facing::Face bias = Facing::FACE_A );
 
 // makeHexField is used to create a list of arbitrary hex's which are relative
 // to an origin hex. This uses a navigate/pen up/pen down approach. Path contains
@@ -331,7 +333,7 @@ std::vector<Hex> hexPath( const Hex& org, const Vector& v, const Facing::Face bi
 //
 // The pen is initially UP.
 //
-std::vector<Hex> makeHexField( const Hex& org, const std::string& path, const Facing::Face face = Facing::FACE_A );
+const std::vector<Hex>& makeHexField( const Hex& org, const std::string& path, const Facing::Face face = Facing::FACE_A );
 
 } // end ns hexpaper
 } // end ns codefool
