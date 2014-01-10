@@ -31,6 +31,15 @@ typedef signed int coord_t;
 //  \___/ D \___/
 //      \___/
 //
+class Facing;
+
+extern const Facing _FacingA;
+extern const Facing _FacingB;
+extern const Facing _FacingC;
+extern const Facing _FacingD;
+extern const Facing _FacingE;
+extern const Facing _FacingF;
+
 class Facing
 {
 public:
@@ -45,9 +54,20 @@ public:
         FACE_CNT
     };
 
-    Facing( Face f = FACE_A );
-    Facing& operator+( const Facing& f );
+    Facing( const Face f = FACE_A );
+    Facing operator-( const Facing& rhs ) const;
+    Facing operator+( const Facing& rhs ) const ;
+    Facing& operator--();
+    Facing  operator--(int);
+    Facing& operator++();
+    Facing  operator++(int);
+    Facing& operator+=( const int bias );
+    Facing& operator-=( const int bias );
+    Facing operator<<( const int bias ) const;
+    Facing operator>>( const int bias ) const;
     Face face( void ) const { return _face; }
+    operator int() const { return (int)_face; }
+    friend std::ostream& operator << (std::ostream& os, const Facing& f );
 
     class iterator : public std::iterator<std::forward_iterator_tag, Face>
     {
@@ -75,7 +95,7 @@ public:
             return _cur;
         }
 
-        iterator operator++()
+        iterator& operator++()
         {
             if( _cnt < FACE_CNT-1 )
             {
@@ -103,7 +123,7 @@ public:
             return iterator( FACE_CNT );
         }
 
-        iterator next()
+        iterator& next()
         {
             return ++(*this);
         }
@@ -160,9 +180,11 @@ public:
 	virtual ~Hex();
 	coord_t row( void ) const { return _row; }
 	coord_t col( void ) const { return _col; }
-	Offset delta(Facing::Face f) const;
-	Hex& move( Facing::Face dir, int distance = 1, Facing::Face bias = Facing::FACE_A );
+	Offset delta(Facing f) const;
+	Hex& move( Facing dir, int distance = 1, Facing bias = _FacingA );
 	Hex& operator+( const Offset& off );
+	bool operator==(const Hex& rhs ) const;
+	bool operator!=(const Hex& rhs ) const;
 	friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
 private:
     coord_t _col;
@@ -172,7 +194,7 @@ private:
 class HexWalker
 {
 public:
-    HexWalker( const Hex& hex );
+    HexWalker( const Hex& hex, const bool noDups = true );
     HexWalker( const HexWalker& obj );
 
     void setOrigin( const Hex& hex );
@@ -183,20 +205,22 @@ public:
     //     U   - pen up   (stop recording hex's.)
     //     M   - mark - push this hex on the stack.
     //     R   - recall - pop hex off the stack (and make that hex the current hex.)
-    void walk( std::string&& path, Facing::Face bias = Facing::FACE_A );
+    void walk( std::string&& path, Facing bias = _FacingA );
     void penUp( void );
     void penDown( void );
     void push( void );
     void pop( void );
-    void move( Facing::Face dir, int cnt, Facing::Face bias = Facing::FACE_A );
+    void move( Facing dir, int cnt, Facing bias = _FacingA );
     void sort( void );
     const std::vector<Hex>& trail( void ) const;
+    const Hex& hex( void ) const;
 
 private:
     Hex              _h;
     std::vector<Hex> _trail;
     std::deque<Hex>  _stack;
     bool             _penDown;
+    bool             _noDups;
 };
 
 } // end ns hexpaper

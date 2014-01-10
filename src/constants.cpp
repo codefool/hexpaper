@@ -18,6 +18,7 @@ coord_t _dr[][6] = {
     { -2, -1, 1, 2, 1, -1 }
 };
 
+
 template <>
 int isOdd<char *>(char *c)
 { return isOdd<int>(atoi(c)); }

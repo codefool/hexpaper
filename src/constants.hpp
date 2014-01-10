@@ -50,7 +50,7 @@ extern coord_t _dc[6];
 extern coord_t _dr[][6];
 
 template <typename T>
-int isOdd(T x)  { return (int)((x&0x1)==1); }
+int isOdd(T x)  { return (int)(x&0x1); }
 
 template <>
 int isOdd<char *>(char *c);

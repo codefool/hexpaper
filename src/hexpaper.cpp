@@ -105,11 +105,38 @@ int main() {
         std::cout << std::endl;
     }
     {
-        std::cout << "hexdrant no bias" << std::endl;
-        std::vector<Hex> x = hexdrant( Hex{5,5}, Facing(), 5 );
-        for( auto h : x )
-            std::cout << h;
+        for( auto f : Facing() )
+        {
+            std::cout << "hexdrant " << f << std::endl;
+            std::vector<Hex> x = hexdrant( Hex{5,5}, Facing(f), 5 );
+            for( auto h : x )
+                std::cout << h;
+            std::cout << std::endl;
+        }
+    }
+
+    {
+        std::cout << "Facing operator test" << std::endl << "prefix++ ";
+        Facing f( Facing::FACE_A );
+        for( int i = Facing::FACE_A; i < Facing::FACE_CNT; ++i )
+            std::cout << ++f;
+        std::cout << std::endl << "postfix++ ";
+        for( int i = Facing::FACE_A; i < Facing::FACE_CNT; ++i )
+            std::cout << f++;
+        std::cout << std::endl << "prefix-- ";
+        for( int i = Facing::FACE_A; i < Facing::FACE_CNT; ++i )
+            std::cout << --f;
+        std::cout << std::endl << "postfix-- ";
+        for( int i = Facing::FACE_A; i < Facing::FACE_CNT; ++i )
+            std::cout << f--;
+        std::cout << std::endl << "shift << ";
+        for( int i = Facing::FACE_A; i < Facing::FACE_CNT * 2; ++i )
+            std::cout << ( f << i );
+        std::cout << std::endl << "shift >> ";
+        for( int i = Facing::FACE_A; i < Facing::FACE_CNT * 2; ++i )
+            std::cout << ( f >> i );
         std::cout << std::endl;
     }
+
 	return 0;
 }
