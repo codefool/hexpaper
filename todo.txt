@@ -1,6 +1,11 @@
 1. Need better means to store hex fields to test for duplicates. Should be able to accomplish this with an array of bit-vectors?
+    Not sure if this is really necessary given the amount of data we're dealing with. Since a set of hex's shouldn't exceed a couple of 100 - at most 1000 - then binary search is prob. good enough in contrast to increase of program complexity, although will continue to ponder.
 2. Project structure sucks. Will most likely re-structure all of this and replace the repository with clean code rather than store all the refactoring pollution for posterity.
+    Done
 3. Need a better strategy for performing facing bias. 
     Implemented operators --,++, <<, >>, etc. Also removed use of Facing::Face as arguments and went to strict use of Facing objects. 
     Also added implicit (int) case for Facing.
 4. Fix hexdrant.
+    I think this is fixed for all directions, but needs more testing.
+5. Implement testing harness.
+6. Add arbitrary attributes to individual hex's (allows for assigning terrain attributes.)    

@@ -111,6 +111,8 @@ public:
     Facing( const Face f = FACE_A );
     Facing operator-( const Facing& rhs ) const;
     Facing operator+( const Facing& rhs ) const ;
+    Facing operator+( const int bias ) const;
+    Facing operator-( const int bias ) const;
     Facing& operator--();
     Facing  operator--(int);
     Facing& operator++();
@@ -239,7 +241,7 @@ private:
 class HexWalker
 {
 public:
-    HexWalker( const Hex& hex, const bool noDups = true );
+    HexWalker( const Hex& hex, const bool allowDups = false );
     HexWalker( const HexWalker& obj );
 
     void setOrigin( const Hex& hex );
@@ -250,13 +252,13 @@ public:
     //     U   - pen up   (stop recording hex's.)
     //     M   - mark - push this hex on the stack.
     //     R   - recall - pop hex off the stack (and make that hex the current hex.)
-    void walk( std::string&& path, const Facing& bias = _FacingA );
-    void penUp( void );
-    void penDown( void );
-    void push( void );
-    void pop( void );
-    void move( const Facing& dir, int cnt, const Facing& bias = _FacingA );
-    void sort( void );
+    HexWalker& walk( std::string&& path, const Facing& bias = _FacingA );
+    HexWalker& penUp( void );
+    HexWalker& penDown( void );
+    HexWalker& push( void );
+    HexWalker& pop( void );
+    HexWalker& move( const Facing& dir, int cnt, const Facing& bias = _FacingA );
+    HexWalker& sort( void );
     const std::vector<Hex>& trail( void ) const;
     const Hex& hex( void ) const;
 
@@ -265,7 +267,7 @@ private:
     std::vector<Hex> _trail;
     std::deque<Hex>  _stack;
     bool             _penDown;
-    bool             _noDups;
+    bool             _allowDups;
 };
 
 class _settings
