@@ -187,7 +187,10 @@ std::ostream& operator << ( std::ostream& os, const Hex& hex )
 
 // HexWalker
 HexWalker::HexWalker( const Hex& hex, const bool allowDups )
-: _h{ hex }, _penDown{ false }, _allowDups{ allowDups }
+: _h{ hex }
+, _trail{ new std::vector<Hex> }
+, _penDown{ false }
+, _allowDups{ allowDups }
 {}
 
 HexWalker::HexWalker( const HexWalker& obj )
@@ -272,8 +275,8 @@ HexWalker& HexWalker::move( const Facing& dir, int cnt, const Facing& bias )
         _h.move(dir,1,bias);
         if( _penDown )
         {
-            if( _allowDups || _trail.end() == std::find( _trail.begin(), _trail.end(), _h ) )
-                _trail.push_back( _h );
+            if( _allowDups || _trail->end() == std::find( _trail->begin(), _trail->end(), _h ) )
+                _trail->push_back( _h );
         }
     }
     return *this;
@@ -282,7 +285,7 @@ HexWalker& HexWalker::move( const Facing& dir, int cnt, const Facing& bias )
 // sort the trail
 HexWalker& HexWalker::sort( void )
 {
-    std::sort(_trail.begin(), _trail.end(),
+    std::sort(_trail->begin(), _trail->end(),
         [](Hex a, Hex b)
         {
             if( a.col() == b.col() )
@@ -294,7 +297,7 @@ HexWalker& HexWalker::sort( void )
     return *this;
 }
 
-const std::vector<Hex>& HexWalker::trail( void ) const
+std::shared_ptr<std::vector<Hex>> HexWalker::trail( void )
 {
     return _trail;
 }
@@ -304,7 +307,7 @@ const Hex& HexWalker::hex( void ) const
     return _h;
 }
 
-const std::vector<Hex>& hexCircField( const Hex& org, const int innerRadius, const int outerRadius)
+std::shared_ptr<std::vector<Hex>> hexCircField( const Hex& org, const int innerRadius, const int outerRadius)
 {
     HexWalker w( org );
     w.move( _FacingA, innerRadius-1 );
@@ -319,7 +322,7 @@ const std::vector<Hex>& hexCircField( const Hex& org, const int innerRadius, con
     return w.trail();
 }
 
-const std::vector<Hex>& hexdrant( const Hex& org, const Facing dir, const int range )
+std::shared_ptr<std::vector<Hex>> hexdrant( const Hex& org, const Facing dir, const int range )
 {
     // a-f (biased) pattern up to range hex's out,
     // then a-b (biased) pattern up to range
@@ -350,10 +353,10 @@ const std::vector<Hex>& hexdrant( const Hex& org, const Facing dir, const int ra
     }
 
     std::cout << "w0:";
-    for( auto h : w0.trail() )
+    for( auto h : *w0.trail() )
         std::cout << h;
     std::cout << std::endl << "w1:";
-    for( auto h : w1.trail() )
+    for( auto h : *w1.trail() )
         std::cout << h;
     std::cout << std::endl;
 

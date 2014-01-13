@@ -13,6 +13,7 @@ using namespace std;
 using namespace org::codefool::hexpaper;
 
 int main() {
+    std::cout << "__cplusplus " << __cplusplus << std::endl;
     Hex h(5,5);
     for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
     {
@@ -51,19 +52,19 @@ int main() {
         HexWalker w(h);
         w.walk(std::string("aap2c2d2e2f2a2bu2d"));
         std::cout << "- trail unsorted: ";
-        for( auto h : w.trail() )
+        for( auto h : *w.trail() )
             std::cout << h;
         std::cout << std::endl;
         w.sort();
         std::cout << "- trail sorted: ";
-        for( auto h : w.trail() )
+        for( auto h : *w.trail() )
             std::cout << h;
         std::cout << std::endl;
     }
     {
         std::cout << "hexCircField test" << std::endl;
-        const std::vector<Hex>& q = hexCircField( Hex{5,5}, 2, 3 );
-        for( auto h : q )
+        std::shared_ptr<std::vector<Hex>> q{ hexCircField( Hex{5,5}, 2, 3 ) };
+        for( auto h : *q )
             std::cout << h;
         std::cout << std::endl;
     }
@@ -74,7 +75,7 @@ int main() {
         {
             HexWalker w( hex );
             w.walk( std::string( "p3dme2drc2d"), f++ );
-            for( auto h : w.trail() )
+            for( auto h : *w.trail() )
                 std::cout << h;
             std::cout << std::endl;
 
@@ -84,9 +85,9 @@ int main() {
         for( auto f : Facing() )
         {
             std::cout << "hexdrant " << f << std::endl;
-            const std::vector<Hex>& x = hexdrant( Hex{5,5}, Facing(f), 5 );
+            std::shared_ptr<std::vector<Hex>> x = hexdrant( Hex{5,5}, Facing(f), 5 );
             std::cout << "trail ";
-            for( auto h : x )
+            for( auto h : *x )
                 std::cout << h;
             std::cout << std::endl;
         }
