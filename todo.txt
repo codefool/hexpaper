@@ -8,4 +8,5 @@
 4. Fix hexdrant.
     I think this is fixed for all directions, but needs more testing.
 5. Implement testing harness.
-6. Add arbitrary attributes to individual hex's (allows for assigning terrain attributes.)    
+6. Add arbitrary attributes to individual hex's (allows for assigning terrain attributes.)   
+7. circField is broken. 

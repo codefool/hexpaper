@@ -197,6 +197,7 @@ public:
     bool operator< (const Hex& rhs ) const;
     bool operator>=(const Hex& rhs ) const;
     bool operator<=(const Hex& rhs ) const;
+    hexfield_t neighbors() const;
     friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
 private:
     coord_t _col;

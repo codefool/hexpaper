@@ -263,6 +263,12 @@ bool Hex::operator<=(const Hex& rhs ) const
     return *this < rhs || *this == rhs;
 }
 
+// return a field of all the hex's immediately surrounding this one.
+hexfield_t Hex::neighbors() const
+{
+    return hexCircField( *this, 1, 1 );
+}
+
 std::ostream& operator << ( std::ostream& os, const Hex& hex )
 {
     os << '(' << (int)hex.col() << ',' << (int)hex.row() << ')';
@@ -397,7 +403,7 @@ HexWalker& HexWalker::pop( void )
 
 HexWalker& HexWalker::move( const Facing& dir, int cnt, const Facing& bias )
 {
-    if( !cnt ) cnt=1;
+    //if( !cnt ) cnt=1;
     while( cnt-- )
     {
         _h.move(dir,1,bias);

@@ -117,6 +117,13 @@ int main() {
             std::cout << ( f >> i );
         std::cout << std::endl;
     }
+    {
+        hexfield_t y = h.neighbors();
+        for( auto x : *y )
+            std::cout << x;
+        std::cout << std::endl;
+    }
+
 
     std::cout << "=== End Run ===" << std::endl;
     return 0;
