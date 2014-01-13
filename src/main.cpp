@@ -63,10 +63,11 @@ int main() {
     }
     {
         std::cout << "hexCircField test" << std::endl;
-        std::shared_ptr<std::vector<Hex>> q{ hexCircField( Hex{5,5}, 2, 3 ) };
+        hexfield_t q{ hexCircField( Hex{5,5}, 2, 3 ) };
         for( auto h : *q )
             std::cout << h;
         std::cout << std::endl;
+        std::cout << HexInfo{ Hex{1,1}, Hex{10,10}, q } << std::endl;
     }
     {
         std::cout << "HexWalker test" << std::endl;
@@ -85,11 +86,12 @@ int main() {
         for( auto f : Facing() )
         {
             std::cout << "hexdrant " << f << std::endl;
-            std::shared_ptr<std::vector<Hex>> x = hexdrant( Hex{5,5}, Facing(f), 5 );
+            hexfield_t x = hexdrant( Hex{5,5}, Facing(f), 5 );
             std::cout << "trail ";
             for( auto h : *x )
                 std::cout << h;
             std::cout << std::endl;
+            std::cout << HexInfo{ Hex{1,1}, Hex{10,10}, x } << std::endl;
         }
     }
 

@@ -297,7 +297,7 @@ HexWalker& HexWalker::sort( void )
     return *this;
 }
 
-std::shared_ptr<std::vector<Hex>> HexWalker::trail( void )
+hexfield_t HexWalker::trail( void )
 {
     return _trail;
 }
@@ -307,7 +307,7 @@ const Hex& HexWalker::hex( void ) const
     return _h;
 }
 
-std::shared_ptr<std::vector<Hex>> hexCircField( const Hex& org, const int innerRadius, const int outerRadius)
+hexfield_t hexCircField( const Hex& org, const int innerRadius, const int outerRadius)
 {
     HexWalker w( org );
     w.move( _FacingA, innerRadius-1 );
@@ -322,7 +322,7 @@ std::shared_ptr<std::vector<Hex>> hexCircField( const Hex& org, const int innerR
     return w.trail();
 }
 
-std::shared_ptr<std::vector<Hex>> hexdrant( const Hex& org, const Facing dir, const int range )
+hexfield_t hexdrant( const Hex& org, const Facing dir, const int range )
 {
     // a-f (biased) pattern up to range hex's out,
     // then a-b (biased) pattern up to range

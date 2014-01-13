@@ -18,33 +18,43 @@ namespace hexpaper {
 
 std::ostream& operator << ( std::ostream& os, const HexInfo& hi )
 {
-    for( coord_t iCol = hi._ulc.col(); iCol <= hi._lrc.col(); ++iCol )
+    for( coord_t iRow = hi._ulc.col(); iRow <= hi._lrc.col(); ++iRow )
     {
         for( int iOdd = 0; iOdd < 2; ++iOdd )
         {
-            for( coord_t iRow = hi._ulc.row() + iOdd; iRow <= hi._lrc.row() + iOdd; iRow+=2)
+            for( coord_t iCol = hi._ulc.row() + iOdd; iCol <= hi._lrc.row() + iOdd; iCol+=2)
             {
                 if( !iOdd )
                     os << " /    \\   ";
                 else
-                {
                     os << " \\    /   ";
-                }
             }
             os << std::endl;
 
-            for( coord_t iRow = hi._ulc.row() + iOdd; iRow <= hi._lrc.row() + iOdd; iRow += 2)
+            for( coord_t iCol = hi._ulc.row() + iOdd; iCol <= hi._lrc.row() + iOdd; iCol += 2)
             {
+                bool found{ hi._hexs->end() != std::find( hi._hexs->begin(), hi._hexs->end(), Hex{iCol,iRow} ) };
+
                 if( !iOdd )
-                    os << "< " << std::setw(2) << std::setfill('0') << iRow
-                       <<         std::setw(2) << std::setfill('0') << iCol << " >--";
+                {
+                    os << "< " << std::setw(2) << std::setfill('0') << iCol
+                       <<         std::setw(2) << std::setfill('0') << iRow;
+                    if( found )
+                        os << '*';
+                    else
+                        os << ' ';
+                    os << ">--";
+                }
                 else
                 {
-                    if( iRow == 2 )
+                    if( iCol == 2 )
                         os << "  ";
-                    os << ">--< " << std::setw(2) << std::setfill('0') << iRow
-                    <<               std::setw(2) << std::setfill('0') << iCol
-                    << ' ';
+                    os << ">--< " << std::setw(2) << std::setfill('0') << iCol
+                    <<               std::setw(2) << std::setfill('0') << iRow;
+                    if( found )
+                        os << '*';
+                    else
+                        os << ' ';
                 }
             }
             os << std::endl;

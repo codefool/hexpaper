@@ -27,6 +27,13 @@ namespace org {
 namespace codefool {
 namespace hexpaper {
 
+// Forward define all classes
+class Facing;
+class Offset;
+class Hex;
+class HexWalker;
+class _settings;
+
 // Grid Orientation
 //
 // An odd-grid is on where the hex of an odd-column is above (at facing B or F) of the
@@ -60,6 +67,7 @@ namespace hexpaper {
 // Hence, we can determine which we should use by IS_ODD(col) XOR IS_ODD(grid)
 //
 typedef signed short coord_t;
+typedef std::shared_ptr<std::vector<Hex>> hexfield_t;
 
 extern coord_t _dc[6];
 extern coord_t _dr[][6];
@@ -85,7 +93,6 @@ int isEven(T x) { return (int)(!isOdd(x)); }
 //  \___/ D \___/
 //      \___/
 //
-class Facing;
 
 // define some handy Facing constants
 extern const Facing _FacingA;
@@ -260,12 +267,12 @@ public:
     HexWalker& pop( void );
     HexWalker& move( const Facing& dir, int cnt, const Facing& bias = _FacingA );
     HexWalker& sort( void );
-    std::shared_ptr<std::vector<Hex>> trail( void );
+    hexfield_t trail( void );
     const Hex& hex( void ) const;
 
 private:
     Hex              _h;
-    std::shared_ptr<std::vector<Hex>> _trail;
+    hexfield_t       _trail;
     std::deque<Hex>  _stack;
     bool             _penDown;
     bool             _allowDups;
@@ -303,21 +310,21 @@ Vector& vectorToHex( const Hex& org, const Hex& dst, const Facing::Face bias = F
 
 // determine the circular field between minRange and maxRange hex's from
 // origin hex.
-std::shared_ptr<std::vector<Hex>> hexCircField( const Hex& org, const int innerRadius = 0, const int outerRadius = 0 );
+hexfield_t hexCircField( const Hex& org, const int innerRadius = 0, const int outerRadius = 0 );
 
 // determine the hexdrant for the origin hex, at the given Facing(s), relative to
 // the provided face, for range hex's.
-std::shared_ptr<std::vector<Hex>> hexdrant( const Hex& org, const std::vector<Facing>&faces, const int range, const Facing::Face bias = Facing::FACE_A );
+hexfield_t hexdrant( const Hex& org, const std::vector<Facing>&faces, const int range, const Facing::Face bias = Facing::FACE_A );
 
 // determine the hexdrant for the origin hex, at the given Facing, relative to
 // the provided face, for range hex's.
-std::shared_ptr<std::vector<Hex>> hexdrant( const Hex& org, const Facing bias, const int range );
+hexfield_t hexdrant( const Hex& org, const Facing bias, const int range );
 
 // determine the hex's that exist between the origin and destination hex's, inclusive.
-std::shared_ptr<std::vector<Hex>> hexPath( const Hex& org, const Hex& dst );
+hexfield_t hexPath( const Hex& org, const Hex& dst );
 
 // determine the hex's that exist from the origin at the given Vector, relative to the given face.
-std::shared_ptr<std::vector<Hex>> hexPath( const Hex& org, const Vector& v, const Facing::Face bias = Facing::FACE_A );
+hexfield_t hexPath( const Hex& org, const Vector& v, const Facing::Face bias = Facing::FACE_A );
 
 // makeHexField is used to create a list of arbitrary hex's which are relative
 // to an origin hex. This uses a navigate/pen up/pen down approach. Path contains
@@ -336,14 +343,14 @@ std::shared_ptr<std::vector<Hex>> hexPath( const Hex& org, const Vector& v, cons
 //
 // The pen is initially UP.
 //
-std::shared_ptr<std::vector<Hex>> makeHexField( const Hex& org, const std::string& path, const Facing::Face face = Facing::FACE_A );
+hexfield_t makeHexField( const Hex& org, const std::string& path, const Facing::Face face = Facing::FACE_A );
 
 struct HexInfo
 {
-	const Hex				_ulc;			// upper left corner of hex field
-	const Hex				_lrc;			// lower right corner of hex field
-	std::shared_ptr<std::vector<Hex>>	_hexs;
-	HexInfo( const Hex& ulc, const Hex& lrc, std::shared_ptr<std::vector<Hex>> hexs )
+	const Hex	_ulc;			// upper left corner of hex field
+	const Hex   _lrc;			// lower right corner of hex field
+	hexfield_t	_hexs;
+	HexInfo( const Hex& ulc, const Hex& lrc, hexfield_t hexs )
 	: _ulc{ ulc }, _lrc{ lrc }, _hexs{ hexs }
 	{}
 	friend std::ostream& operator << ( std::ostream& os, const HexInfo& hi );
