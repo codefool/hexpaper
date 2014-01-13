@@ -121,6 +121,63 @@ std::ostream& operator << (std::ostream& os, const Facing& f )
     return os;
 }
 
+Facing::iterator::iterator( const Face face )
+: _face{ face }, _cur{ face }, _cnt{ 0 }
+{}
+
+Facing::iterator::iterator( const iterator& other )
+: _face{other._face}, _cur{ other._cur },_cnt{other._cnt}
+{}
+
+bool Facing::iterator::operator==( const iterator& other ) const
+{
+    return _cur == other._cur;
+}
+
+bool Facing::iterator::operator !=(const iterator& other ) const
+{
+    return _cur != other._cur;
+}
+
+Facing::Face Facing::iterator::operator*()
+{
+    return _cur;
+}
+
+Facing::iterator& Facing::iterator::operator++()
+{
+    if( _cnt < FACE_CNT-1 )
+    {
+        _cur = (Face)(( _face + ++_cnt ) % FACE_CNT );
+    }
+    else
+        _cur = FACE_CNT;
+    return *this;
+}
+
+Facing::iterator Facing::iterator::operator++(int)
+{
+    iterator old(*this);
+    ++(*this);
+    return old;
+}
+
+Facing::iterator Facing::iterator::begin()
+{
+    return iterator( _face );
+}
+
+Facing::iterator Facing::iterator::end()
+{
+    return iterator( FACE_CNT );
+}
+
+Facing::iterator& Facing::iterator::next()
+{
+    return ++(*this);
+}
+
+
 Offset::Offset( coord_t c, coord_t r )
 : _dc( c ), _dr( r )
 {}

@@ -136,63 +136,16 @@ public:
     class iterator : public std::iterator<std::forward_iterator_tag, Face>
     {
     public:
-        iterator( const Face face = FACE_A )
-        : _face{ face }, _cur{ face }, _cnt{ 0 }
-        {}
-
-        iterator( const iterator& other )
-        : _face{other._face}, _cur{ other._cur },_cnt{other._cnt}
-        {}
-
-        bool operator==( const iterator& other ) const
-        {
-            return _cur == other._cur;
-        }
-
-        bool operator !=(const iterator& other ) const
-        {
-            return _cur != other._cur;
-        }
-
-        Face operator*()
-        {
-            return _cur;
-        }
-
-        iterator& operator++()
-        {
-            if( _cnt < FACE_CNT-1 )
-            {
-                _cur = (Face)(( _face + ++_cnt ) % FACE_CNT );
-            }
-            else
-                _cur = FACE_CNT;
-            return *this;
-        }
-
-        iterator operator++(int)
-        {
-            iterator old(*this);
-            ++(*this);
-            return old;
-        }
-
-        iterator begin()
-        {
-            return iterator( _face );
-        }
-
-        iterator end()
-        {
-            return iterator( FACE_CNT );
-        }
-
-        iterator& next()
-        {
-            return ++(*this);
-        }
-
-
+        iterator( const Face face = FACE_A );
+        iterator( const iterator& other );
+        bool operator==( const iterator& other ) const;
+        bool operator !=(const iterator& other ) const;
+        Face operator*();
+        iterator& operator++();
+        iterator operator++(int);
+        iterator begin();
+        iterator end();
+        iterator& next();
     private:
         Face _face;
         Face _cur;
