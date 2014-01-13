@@ -240,10 +240,29 @@ public:
     Hex& operator+( const Offset& off );
     bool operator==(const Hex& rhs ) const;
     bool operator!=(const Hex& rhs ) const;
+    bool operator> (const Hex& rhs ) const;
+    bool operator< (const Hex& rhs ) const;
+    bool operator>=(const Hex& rhs ) const;
+    bool operator<=(const Hex& rhs ) const;
     friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
 private:
     coord_t _col;
     coord_t _row;
+};
+
+class Heading
+{
+public:
+    Heading( const Hex& loc, const Facing& dir );
+    Heading& turn( Facing newDir );
+    Heading& forward( const int distance = 1 );
+    Heading& left( const int distance = 1 );
+    Heading& right( const int distance = 1 );
+    Heading& slipLeft( int distance = 1 );
+    Heading& slipRight( int distance = 1 );
+private:
+    Hex     _loc;
+    Facing  _dir;
 };
 
 class HexWalker

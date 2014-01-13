@@ -179,10 +179,81 @@ bool Hex::operator!=(const Hex& rhs ) const
     return !( *this == rhs );
 }
 
+// Relational operators
+//
+// Given two hexes a and b:
+// - If a is closer to the top edge then a < b.
+// - If a is closer to the left edge, then a < b.
+bool Hex::operator> (const Hex& rhs ) const
+{
+    // FIXME: This is dependent on grid orientation
+    return _col < rhs._col || _row < rhs._row;
+}
+
+bool Hex::operator< (const Hex& rhs ) const
+{
+    // FIXME: This is dependent on grid orientation
+    return _col > rhs._col || _row > rhs._row;
+}
+
+bool Hex::operator>=(const Hex& rhs ) const
+{
+    return *this > rhs || *this == rhs;
+}
+
+bool Hex::operator<=(const Hex& rhs ) const
+{
+    return *this < rhs || *this == rhs;
+}
+
 std::ostream& operator << ( std::ostream& os, const Hex& hex )
 {
     os << '(' << (int)hex.col() << ',' << (int)hex.row() << ')';
     return os;
+}
+
+// Heading
+
+Heading::Heading( const Hex& loc, const Facing& dir )
+: _loc{ loc }, _dir{ dir }
+{}
+
+Heading& Heading::turn( Facing newDir )
+{
+    _dir = newDir;
+    return *this;
+}
+
+Heading& Heading::forward( const int distance )
+{
+    _loc.move(_dir, distance );
+    return *this;
+}
+
+Heading& Heading::left( const int distance )
+{
+    _loc.move(--_dir, distance );
+    return *this;
+}
+
+Heading& Heading::right( const int distance )
+{
+    _loc.move(++_dir, distance );
+    return *this;
+}
+
+Heading& Heading::slipLeft( int distance )
+{
+    while( distance-- )
+        _loc.move( _dir << 1, 1 );
+    return *this;
+}
+
+Heading& Heading::slipRight( int distance )
+{
+    while( distance-- )
+        _loc.move( _dir >> 1, 1 );
+    return *this;
 }
 
 // HexWalker
