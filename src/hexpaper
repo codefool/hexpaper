@@ -337,6 +337,18 @@ const std::vector<Hex>& hexPath( const Hex& org, const Vector& v, const Facing::
 //
 const std::vector<Hex>& makeHexField( const Hex& org, const std::string& path, const Facing::Face face = Facing::FACE_A );
 
+struct HexInfo
+{
+	const Hex				_ulc;			// upper left corner of hex field
+	const Hex				_lrc;			// lower right corner of hex field
+	const std::vector<Hex>&	_hexs;
+	HexInfo( const Hex& ulc, const Hex& lrc, const std::vector<Hex>& hexs )
+	: _ulc{ ulc }, _lrc{ lrc }, _hexs{ hexs }
+	{}
+	friend std::ostream& operator << ( std::ostream& os, const HexInfo& hi );
+};
+
+
 } // end ns hexpaper
 } // end ns codefool
 } // end ns org
