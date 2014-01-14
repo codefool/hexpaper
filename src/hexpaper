@@ -101,6 +101,7 @@ extern const Facing _FacingC;
 extern const Facing _FacingD;
 extern const Facing _FacingE;
 extern const Facing _FacingF;
+extern const Facing _FacingX;
 
 class Facing
 {
@@ -117,6 +118,7 @@ public:
     };
 
     Facing( const Face f = FACE_A );
+    Facing( const Facing& obj );
     Facing operator-( const Facing& rhs ) const;
     Facing operator+( const Facing& rhs ) const ;
     Facing operator+( const int bias ) const;
@@ -136,7 +138,7 @@ public:
     class iterator : public std::iterator<std::forward_iterator_tag, Face>
     {
     public:
-        iterator( const Face face = FACE_A );
+        iterator( const Facing face = _FacingA );
         iterator( const iterator& other );
         bool operator==( const iterator& other ) const;
         bool operator !=(const iterator& other ) const;
@@ -147,13 +149,13 @@ public:
         iterator end();
         iterator& next();
     private:
-        Face _face;
-        Face _cur;
-        int  _cnt;
+        std::shared_ptr<Facing> _face;
+        Facing::Face		    _cur;
+        int    					_cnt;
     };
 
-    iterator begin() { return Facing::iterator( _face ); }
-    iterator end()   { return Facing::iterator( FACE_CNT ); }
+    iterator begin() { return Facing::iterator( *this ); }
+    iterator end()   { return Facing::iterator( _FacingX ); }
 
 private:
     Face    _face;

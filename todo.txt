@@ -1,5 +1,17 @@
 1. Need better means to store hex fields to test for duplicates. Should be able to accomplish this with an array of bit-vectors?
     Not sure if this is really necessary given the amount of data we're dealing with. Since a set of hex's shouldn't exceed a couple of 100 - at most 1000 - then binary search is prob. good enough in contrast to increase of program complexity, although will continue to ponder.
+    Explore the possibility of using a union so that coords are easily packed into a long. This would allow coords to be sorted and stored in an array, and searching for them would be O(lgn).
+    union
+    {
+        struct _i
+        {
+            int _col
+            int _row;
+        }
+        long   _l;
+    }
+         
+    The issue with this approach is that negative coords are problematic, since sign extension would most likely destroy the high value.
 2. Project structure sucks. Will most likely re-structure all of this and replace the repository with clean code rather than store all the refactoring pollution for posterity.
     Done
 3. Need a better strategy for performing facing bias. 
@@ -10,3 +22,4 @@
 5. Implement testing harness.
 6. Add arbitrary attributes to individual hex's (allows for assigning terrain attributes.)   
 7. circField is broken. 
+    - fixed

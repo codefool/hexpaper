@@ -32,9 +32,14 @@ const Facing _FacingC{ Facing::FACE_C };
 const Facing _FacingD{ Facing::FACE_D };
 const Facing _FacingE{ Facing::FACE_E };
 const Facing _FacingF{ Facing::FACE_F };
+const Facing _FacingX{ Facing::FACE_CNT };
 
 Facing::Facing( const Face f )
 : _face(f)
+{}
+
+Facing::Facing( const Facing& obj )
+: _face{ obj._face }
 {}
 
 Facing Facing::operator+( const Facing& rhs ) const
@@ -121,8 +126,10 @@ std::ostream& operator << (std::ostream& os, const Facing& f )
     return os;
 }
 
-Facing::iterator::iterator( const Face face )
-: _face{ face }, _cur{ face }, _cnt{ 0 }
+Facing::iterator::iterator( const Facing face )
+: _face{ new Facing( face ) }
+, _cur{ face.face() }
+, _cnt( 0 )
 {}
 
 Facing::iterator::iterator( const iterator& other )
@@ -147,9 +154,7 @@ Facing::Face Facing::iterator::operator*()
 Facing::iterator& Facing::iterator::operator++()
 {
     if( _cnt < FACE_CNT-1 )
-    {
-        _cur = (Face)(( _face + ++_cnt ) % FACE_CNT );
-    }
+        _cur = (*_face >> ++_cnt).face();
     else
         _cur = FACE_CNT;
     return *this;
@@ -164,12 +169,12 @@ Facing::iterator Facing::iterator::operator++(int)
 
 Facing::iterator Facing::iterator::begin()
 {
-    return iterator( _face );
+    return iterator{ *_face };
 }
 
 Facing::iterator Facing::iterator::end()
 {
-    return iterator( FACE_CNT );
+    return iterator{ Facing{ FACE_CNT } };
 }
 
 Facing::iterator& Facing::iterator::next()
