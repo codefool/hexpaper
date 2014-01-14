@@ -73,16 +73,16 @@ extern coord_t _dc[6];
 extern coord_t _dr[][6];
 
 template <typename T>
-int isOdd(T x)  { return (int)(x&0x1); }
+bool isOdd(T x)  { return (bool)(x&0x1); }
 
 template <>
-int isOdd<char *>(char *c);
+bool isOdd<char *>(char *c);
 
 template <>
-int isOdd<std::string>(std::string s);
+bool isOdd<std::string>(std::string s);
 
 template <typename T>
-int isEven(T x) { return (int)(!isOdd(x)); }
+bool isEven(T x) { return (int)(!isOdd(x)); }
 
 //  Primary Facings:
 //       ___
@@ -325,7 +325,7 @@ struct HexInfo
 	const Hex	_ulc;			// upper left corner of hex field
 	const Hex   _lrc;			// lower right corner of hex field
 	hexfield_t	_hexs;
-	HexInfo( const Hex& ulc, const Hex& lrc, hexfield_t hexs )
+	HexInfo( const Hex& ulc, const Hex& lrc, hexfield_t hexs = nullptr )
 	: _ulc{ ulc }, _lrc{ lrc }, _hexs{ hexs }
 	{}
 	friend std::ostream& operator << ( std::ostream& os, const HexInfo& hi );

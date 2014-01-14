@@ -20,7 +20,7 @@ int main() {
         Offset off = h.delta( (Facing::Face)f );
         std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
     }
-    settings.setOddGrid( true );
+    settings.setOddGrid( false );
     for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
     {
         Offset off = h.delta( (Facing::Face)f );
@@ -123,6 +123,14 @@ int main() {
             std::cout << x;
         std::cout << std::endl;
     }
+
+    settings.setOddGrid( false );
+    std::cout << "Even Grid, Odd  Origin" << std::endl << HexInfo{ Hex{ 1,1 }, Hex{ 5, 5 } };
+    std::cout << "Even Grid, Even Origin" << std::endl << HexInfo{ Hex{ 2,1 }, Hex{ 5, 5 } };
+    settings.setOddGrid( true );
+    std::cout << "Odd Grid, Odd  Origin" << std::endl << HexInfo{ Hex{ 1,1 }, Hex{ 5, 5 } };
+    std::cout << "Odd Grid, Even Origin" << std::endl << HexInfo{ Hex{ 2,1 }, Hex{ 5, 5 } };
+
 
 
     std::cout << "=== End Run ===" << std::endl;

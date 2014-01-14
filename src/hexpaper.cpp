@@ -19,11 +19,11 @@ coord_t _dr[][6] = {
 };
 
 template <>
-int isOdd<char *>(char *c)
+bool isOdd<char *>(char *c)
 { return isOdd<int>(atoi(c)); }
 
 template <>
-int isOdd<std::string>(std::string s)
+bool isOdd<std::string>(std::string s)
 { return isOdd<int>(atoi(s.c_str())); }
 
 const Facing _FacingA{ Facing::FACE_A };
