@@ -18,6 +18,13 @@ coord_t _dr[][6] = {
     { -2, -1, 1, 2, 1, -1 }
 };
 
+// border hexes
+coord_t _bdc[6] = { 1, 2, 1, -1, -2, -1 };
+coord_t _bdr[][6] = {
+        { -2, 0, 1, 1, 0, -2 },
+        { -1, 0, 2, 2, 0, -1 }
+};
+
 template <>
 bool isOdd<char *>(char *c)
 { return isOdd<int>(atoi(c)); }
@@ -37,6 +44,14 @@ const Facing _FacingX{ Facing::FACE_CNT };
 Facing::Facing( const Face f )
 : _face(f)
 {}
+
+Facing::Facing( const char face )
+: _face{ FACE_A }
+{
+    char c{::tolower(face)};
+    if( 'a' <= c && c <= 'f' )
+        _face = (Face)(c - 'a');
+}
 
 Facing::Facing( const Facing& obj )
 : _face{ obj._face }
@@ -217,7 +232,7 @@ Hex& Hex::move( const Facing& dir, int distance, const Facing& bias )
 {
     while( distance-- )
     {
-        Offset off = delta( dir << bias );
+        Offset off = delta( dir >> bias );
         _col += off.dc();
         _row += off.dr();
     }
@@ -355,7 +370,7 @@ void HexWalker::setOrigin( const Hex& hex )
 //     R   - recall - pop hex off the stack (and make that hex the current hex.)
 HexWalker& HexWalker::walk( std::string&& path, const Facing& bias )
 {
-    std::transform(path.begin(), path.end(), path.begin(), ::tolower);
+    std::transform( path.begin(), path.end(), path.begin(), ::tolower );
     int cnt{0};
     for( char c : path )
     {
@@ -365,8 +380,8 @@ HexWalker& HexWalker::walk( std::string&& path, const Facing& bias )
         }
         else if( 'a' <= c && c <= 'f' )
         {
-            Facing f{(Facing::Face)( c - 'a')};
-            move( f + bias, cnt );
+            Facing f{c};
+            move( f >> bias, cnt );
             cnt = 0;
         }
         else
@@ -378,6 +393,16 @@ HexWalker& HexWalker::walk( std::string&& path, const Facing& bias )
             case 'r': pop();     break;
             }
     }
+    return *this;
+}
+
+// seek the given hex from the origin hex, starting with the given face
+HexWalker& seek( Hex org, const Facing& face, const Hex& dst )
+{
+
+
+
+
     return *this;
 }
 
@@ -411,7 +436,7 @@ HexWalker& HexWalker::move( const Facing& dir, int cnt, const Facing& bias )
     //if( !cnt ) cnt=1;
     while( cnt-- )
     {
-        _h.move(dir,1,bias);
+        _h.move( dir, 1, bias );
         if( _penDown )
         {
             if( _allowDups || _trail->end() == std::find( _trail->begin(), _trail->end(), _h ) )
@@ -465,9 +490,9 @@ hexfield_t hexdrant( const Hex& org, const Facing dir, const int range )
 {
     // a-f (biased) pattern up to range hex's out,
     // then a-b (biased) pattern up to range
-    Facing l[2] = { dir, dir - 1 };
-    Facing r[2] = { dir, dir + 1 };
-    Facing m[2] = { dir + 2, dir + 1 };
+    Facing l[2] = { dir, dir << 1 };
+    Facing r[2] = { dir, dir >> 1 };
+    Facing m[2] = { dir >> 2, dir >> 1 };
 
     HexWalker w0( org );
     HexWalker w1( org );

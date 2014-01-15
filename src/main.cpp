@@ -124,15 +124,6 @@ int main() {
         std::cout << std::endl;
     }
 
-    settings.setOddGrid( false );
-    std::cout << "Even Grid, Odd  Origin" << std::endl << HexInfo{ Hex{ 1,1 }, Hex{ 5, 5 } };
-    std::cout << "Even Grid, Even Origin" << std::endl << HexInfo{ Hex{ 2,1 }, Hex{ 5, 5 } };
-    settings.setOddGrid( true );
-    std::cout << "Odd Grid, Odd  Origin" << std::endl << HexInfo{ Hex{ 1,1 }, Hex{ 5, 5 } };
-    std::cout << "Odd Grid, Even Origin" << std::endl << HexInfo{ Hex{ 2,1 }, Hex{ 5, 5 } };
-
-
-
     std::cout << "=== End Run ===" << std::endl;
     return 0;
 }
