@@ -195,8 +195,9 @@ public:
     coord_t col( void ) const { return _col; }
     Offset delta(const Facing& f) const;
     Hex& move( const Facing& dir, int distance = 1, const Facing& bias = _FacingA );
+    Hex at( const Facing& f );
     Hex& operator+( const Offset& off );
-    Offset operator-( const Hex& rhs );
+    Offset operator-( const Hex& rhs ) const;
     bool operator==(const Hex& rhs ) const;
     bool operator!=(const Hex& rhs ) const;
     bool operator> (const Hex& rhs ) const;
@@ -240,7 +241,7 @@ public:
     //     M   - mark - push this hex on the stack.
     //     R   - recall - pop hex off the stack (and make that hex the current hex.)
     HexWalker& walk( std::string&& path, const Facing& bias = _FacingA );
-    HexWalker& seek( const Facing& face, const Hex& dst );
+    HexWalker& seek( const Hex& dst );
     HexWalker& penUp( void );
     HexWalker& penDown( void );
     HexWalker& push( void );
@@ -250,6 +251,7 @@ public:
     HexWalker& sort( void );
     hexfield_t trail( void );
     const Hex& hex( void ) const;
+    friend std::ostream& operator<<( std::ostream& os, const HexWalker& hw );
 
 private:
     Hex              _h;

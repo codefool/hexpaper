@@ -124,8 +124,12 @@ int main() {
         std::cout << std::endl;
     }
     {
-        HexWalker w{ Hex{5,5} };
-        w.seek( _FacingA, Hex{ 7, 7 } );
+        settings.setOddGrid(false);
+        Hex org{ 1, 3 };
+        Hex dst{ 6, 5 };
+        HexWalker w{ org };
+        w.seek( dst );
+        std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
     }
 
     std::cout << "=== End Run ===" << std::endl;

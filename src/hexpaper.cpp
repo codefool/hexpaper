@@ -13,9 +13,8 @@ namespace hexpaper {
 
 coord_t _dc[6] = { 0, 1, 1, 0, -1, -1 };
 coord_t _dr[][6] = {
-    { -1, -1, 0, 1, 0, -1 },
     { -1,  0, 1, 1, 1,  0 },
-    { -2, -1, 1, 2, 1, -1 }
+    { -1, -1, 0, 1, 0, -1 }
 };
 
 template <>
@@ -243,7 +242,12 @@ Hex& Hex::operator+( const Offset& off )
     return *this;
 }
 
-Offset Hex::operator-( const Hex& rhs )
+Hex Hex::at( const Facing& f )
+{
+    return Hex{ *this + delta( f ) };
+}
+
+Offset Hex::operator-( const Hex& rhs ) const
 {
     return Offset( col() - rhs.col(), row() - rhs.row() );
 }
@@ -399,27 +403,26 @@ HexWalker& HexWalker::walk( std::string&& path, const Facing& bias )
 }
 
 // seek the given hex from the origin hex, starting with the given face
-HexWalker& HexWalker::seek( const Facing& face, const Hex& dst )
+HexWalker& HexWalker::seek( const Hex& dst )
 {
     penDown();
-    move( face, 1 );
     while( dst != _h )
     {
-        // from where we are (_h) see in which direction we need to move
-        // to get closer (or exactly to) the dst hex.
-        Offset c(9999,9999);
-        Hex    ch(0,0);
-        for( auto n : *_h.neighbors() )
+        Offset bias = dst - _h;
+        Facing dir;
+        if( 0 == bias.dc() )
         {
-            Offset on = n - _h;
-            if( on.dc() < c.dc() || on.dr() < c.dr() )
-            {
-                c = on;
-                ch = n;
-            }
+            dir = (bias.dr() > 0) ? _FacingD : _FacingA;
         }
-        std::cout << "Closest neighbor to " << _h << " is " << ch << std::endl;
-        _h = ch;
+        else if( bias.dc() < 0 )
+        {
+            dir = (bias.dr() > 0) ? _FacingE : _FacingF;
+        }
+        else // bias.dc() > 0
+        {
+            dir = (bias.dr() > 0) ? _FacingC : _FacingB;
+        }
+        move( dir, 1 );
     }
     return *this;
 }
@@ -495,6 +498,13 @@ hexfield_t HexWalker::trail( void )
 const Hex& HexWalker::hex( void ) const
 {
     return _h;
+}
+
+std::ostream& operator<<( std::ostream& os, const HexWalker& hw )
+{
+    for( auto h : *hw._trail )
+        os << h;
+    return os;
 }
 
 hexfield_t hexCircField( const Hex& org, const int innerRadius, const int outerRadius)
