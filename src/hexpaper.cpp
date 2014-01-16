@@ -18,13 +18,6 @@ coord_t _dr[][6] = {
     { -2, -1, 1, 2, 1, -1 }
 };
 
-// border hexes
-coord_t _bdc[6] = { 1, 2, 1, -1, -2, -1 };
-coord_t _bdr[][6] = {
-        { -2, 0, 1, 1, 0, -2 },
-        { -1, 0, 2, 2, 0, -1 }
-};
-
 template <>
 bool isOdd<char *>(char *c)
 { return isOdd<int>(atoi(c)); }
@@ -213,6 +206,10 @@ Hex::Hex( coord_t col, coord_t row)
 : _col{col}, _row{row}
 {}
 
+Hex::Hex( const Hex& obj )
+: _col{ obj._col }, _row{ obj._row }
+{}
+
 Hex::Hex( Offset& off )
 : _col{ off.dc() }, _row{ off.dr() }
 {}
@@ -244,6 +241,11 @@ Hex& Hex::operator+( const Offset& off )
     _col += off.dc();
     _row += off.dr();
     return *this;
+}
+
+Offset Hex::operator-( const Hex& rhs )
+{
+    return Offset( col() - rhs.col(), row() - rhs.row() );
 }
 
 bool Hex::operator==(const Hex& rhs ) const
@@ -397,12 +399,28 @@ HexWalker& HexWalker::walk( std::string&& path, const Facing& bias )
 }
 
 // seek the given hex from the origin hex, starting with the given face
-HexWalker& seek( Hex org, const Facing& face, const Hex& dst )
+HexWalker& HexWalker::seek( const Facing& face, const Hex& dst )
 {
-
-
-
-
+    penDown();
+    move( face, 1 );
+    while( dst != _h )
+    {
+        // from where we are (_h) see in which direction we need to move
+        // to get closer (or exactly to) the dst hex.
+        Offset c(9999,9999);
+        Hex    ch(0,0);
+        for( auto n : *_h.neighbors() )
+        {
+            Offset on = n - _h;
+            if( on.dc() < c.dc() || on.dr() < c.dr() )
+            {
+                c = on;
+                ch = n;
+            }
+        }
+        std::cout << "Closest neighbor to " << _h << " is " << ch << std::endl;
+        _h = ch;
+    }
     return *this;
 }
 
@@ -428,6 +446,14 @@ HexWalker& HexWalker::pop( void )
 {
     _h = _stack.back();
     _stack.pop_back();
+    return *this;
+}
+
+HexWalker& HexWalker::clear( void )
+{
+    _stack.clear();
+    _trail->clear();
+    penUp();
     return *this;
 }
 

@@ -72,18 +72,6 @@ typedef std::shared_ptr<std::vector<Hex>> hexfield_t;
 
 extern coord_t _dc[6];
 extern coord_t _dr[][6];
-// border hexes
-//
-//             even grid      odd grid
-//        col  even   odd     even  odd
-// Facing AB  1,-2   1,-1     1,-1  1,-2
-//        BC  2, 0   2, 0     2, 0  2, 0
-//        CD  1, 1   1, 2     1, 2  1, 1
-//        DE -1, 1  -1, 2    -1, 2 -1, 1
-//        EF -2, 0  -2, 0    -2, 0 -2, 0
-//        FA -1,-2  -1,-1    -1,-1 -1,-2
-extern coord_t _bdc[6];
-extern coord_t _bdr[][6];
 
 template <typename T>
 bool isOdd(T x)  { return (bool)(x&0x1); }
@@ -200,6 +188,7 @@ class Hex
 {
 public:
     Hex( coord_t col, coord_t row);
+    Hex( const Hex& obj );
     Hex( Offset& off );
     virtual ~Hex();
     coord_t row( void ) const { return _row; }
@@ -207,6 +196,7 @@ public:
     Offset delta(const Facing& f) const;
     Hex& move( const Facing& dir, int distance = 1, const Facing& bias = _FacingA );
     Hex& operator+( const Offset& off );
+    Offset operator-( const Hex& rhs );
     bool operator==(const Hex& rhs ) const;
     bool operator!=(const Hex& rhs ) const;
     bool operator> (const Hex& rhs ) const;
@@ -250,11 +240,12 @@ public:
     //     M   - mark - push this hex on the stack.
     //     R   - recall - pop hex off the stack (and make that hex the current hex.)
     HexWalker& walk( std::string&& path, const Facing& bias = _FacingA );
-    HexWalker& seek( Hex org, const Facing& face, const Hex& dst );
+    HexWalker& seek( const Facing& face, const Hex& dst );
     HexWalker& penUp( void );
     HexWalker& penDown( void );
     HexWalker& push( void );
     HexWalker& pop( void );
+    HexWalker& clear( void );
     HexWalker& move( const Facing& dir, int cnt, const Facing& bias = _FacingA );
     HexWalker& sort( void );
     hexfield_t trail( void );

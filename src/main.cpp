@@ -123,6 +123,10 @@ int main() {
             std::cout << x;
         std::cout << std::endl;
     }
+    {
+        HexWalker w{ Hex{5,5} };
+        w.seek( _FacingA, Hex{ 7, 7 } );
+    }
 
     std::cout << "=== End Run ===" << std::endl;
     return 0;
