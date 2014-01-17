@@ -236,6 +236,7 @@ private:
 class HexWalker
 {
 public:
+    HexWalker();
     HexWalker( const Hex& hex, const bool allowDups = false );
     HexWalker( const HexWalker& obj );
 

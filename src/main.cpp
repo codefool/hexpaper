@@ -126,19 +126,28 @@ int main() {
     {
         settings.setOddGrid( true );
         Hex org{ 5, 5 };
-        Hex dst{ 1, 1 };
         HexWalker w{ org };
-        w.seek( dst );
-        std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
-        dst = Hex{ 1, 10 };
-        w.clear().setOrigin( Hex{ 5, 5 } ).seek( Hex{ 1, 10 } );
-        std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
-        dst = Hex{ 10, 1 };
-        w.clear().setOrigin( org ).seek( dst );
-        std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
-        dst = Hex{ 10, 10 };
-        w.clear().setOrigin( org ).seek( dst );
-        std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
+        for( auto dst : {Hex{1,1},Hex{1,10},Hex{10,1},Hex{10,10},Hex{5,10},Hex{1,5},Hex{5,1},Hex{5,10}} )
+        {
+            w.clear().setOrigin( org ).seek( dst );
+            std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
+        }
+    }
+    {
+        std::cout << "***** Exhaustive seek test for 10x10 grid ****" << std::endl;
+        HexWalker w;
+        for( auto org : {Hex{5,5},Hex{5,4},Hex{4,5},Hex{4,4}} )
+        {
+            for( coord_t col = 1; col < 11; ++col )
+            {
+                for( coord_t row = 1; row < 11; ++row )
+                {
+                    Hex dst{ col, row };
+                    w.clear().setOrigin( org ).seek( dst );
+                    std::cout << org << ' ' << dst << ' ' << w << std::endl;
+                }
+            }
+        }
     }
 
     std::cout << "=== End Run ===" << std::endl;

@@ -379,6 +379,13 @@ Heading& Heading::slipRight( int distance )
 }
 
 // HexWalker
+HexWalker::HexWalker()
+: _h{ Hex{0,0} }
+, _trail{ new std::vector<Hex> }
+, _penDown{ false }
+, _allowDups{ false }
+{}
+
 HexWalker::HexWalker( const Hex& hex, const bool allowDups )
 : _h{ hex }
 , _trail{ new std::vector<Hex> }
@@ -441,16 +448,25 @@ HexWalker& HexWalker::seek( const Hex& dst )
 {
     penDown();
     Offset bias = dst - _h;
+    Facing dir;
     if( 0 == bias.dc() )
     {
         // go straight up or down
-        while( dst != _h )
-            move( ( (bias.dr() < 0) ? _FacingD : _FacingA ), 1 );
+        dir = (bias.dr() > 0) ? _FacingD : _FacingA;
+        move( dir, std::abs( bias.dr() ) );
     }
     else if( 0 == bias.dr() )
     {
-        // go straight left or right, but more complicated since the
-        // course is staggered.
+        // go left or right
+        while( _h != dst )
+        {
+            bias = dst - _h;
+            if( isOdd( _h.col()) ^ settings.isOddGrid() )
+                dir = ( bias.dc() > 0 ) ? _FacingC : _FacingE;
+            else
+                dir = ( bias.dc() > 0 ) ? _FacingB : _FacingF;
+            move( dir, 1 );
+        }
     }
     else
     {
@@ -458,14 +474,13 @@ HexWalker& HexWalker::seek( const Hex& dst )
         //
         // calculate the angle from the _h to _dst and use that as the reference bearing.
         double bearing{ _h.atan( dst ) };
-        std::cout << "Raw bearing from " << _h << " to " << dst << " is " << bearing << " degrees." << std::endl;
+        //std::cout << "Raw bearing from " << _h << " to " << dst << " is " << bearing << " degrees." << std::endl;
 
         while( _h != dst )
         {
             // choose the two hex's that are in the direction
             // How to this?
             bias = dst - _h;
-            Facing dir;
             Facing f0;
             Facing f1;
             double b0, b1;
@@ -491,11 +506,11 @@ HexWalker& HexWalker::seek( const Hex& dst )
                     f0 = _FacingA;
                     f1 = ( bias.dc() > 0 ) ? _FacingB : _FacingF;
                 }
-                std::cout << "Facing choices for " << _h << " are " << f0 << " and " << f1 << std::endl;
+                //std::cout << "Facing choices for " << _h << " are " << f0 << " and " << f1 << std::endl;
 
                 Hex h0 = _h.at( f0 );
                 Hex h1 = _h.at( f1 );
-                std::cout << "Grid is " << settings.isOddGrid() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
+                //std::cout << "Grid is " << settings.isOddGrid() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
 
                 if( dst == h0 )
                     dir = f0;
@@ -506,8 +521,8 @@ HexWalker& HexWalker::seek( const Hex& dst )
                     // calculate their angles.
                     b0 = h0.atan( dst );
                     b1 = h1.atan( dst );
-                    std::cout << "Raw bearing from " << h0 << " to " << dst << " is " << b0 << " degrees, delta " << std::abs( bearing - b0 ) << std::endl;
-                    std::cout << "Raw bearing from " << h1 << " to " << dst << " is " << b1 << " degrees, delta " << std::abs( bearing - b1 ) << std::endl;
+                    //std::cout << "Raw bearing from " << h0 << " to " << dst << " is " << b0 << " degrees, delta " << std::abs( bearing - b0 ) << std::endl;
+                    //std::cout << "Raw bearing from " << h1 << " to " << dst << " is " << b1 << " degrees, delta " << std::abs( bearing - b1 ) << std::endl;
 
                     // the hex with the angle *closest* to the reference angle is the winner!
                     dir = ( std::abs( bearing - b0 ) < std::abs( bearing - b1 ) ) ? f0 : f1;
@@ -554,7 +569,6 @@ HexWalker& HexWalker::clear( void )
 
 HexWalker& HexWalker::move( const Facing& dir, int cnt, const Facing& bias )
 {
-    //if( !cnt ) cnt=1;
     while( cnt-- )
     {
         _h.move( dir, 1, bias );
