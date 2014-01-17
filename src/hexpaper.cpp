@@ -469,41 +469,49 @@ HexWalker& HexWalker::seek( const Hex& dst )
             Facing f0;
             Facing f1;
             double b0, b1;
-            if( 0 > bias.dc() )
+            if( bias.dr() == 0 )
             {
-                // dst is above _h
-                f0 = _FacingA;
-                f1 = ( 0 < bias.dr() ) ? _FacingB : _FacingF;
+                // go left or right
+                if( isOdd(_h.col()) ^ settings.isOddGrid() )
+                    dir = ( bias.dc() > 0 ) ? _FacingC : _FacingE;
+                else
+                    dir = ( bias.dc() > 0 ) ? _FacingB : _FacingF;
             }
             else
             {
-                // dst is below _h
-                f0 = _FacingD;
-                f1 = ( 0 < bias.dr() ) ? _FacingC : _FacingE;
-            }
-            std::cout << "Facing choices for " << _h << " are " << f0 << " and " << f1 << std::endl;
+                if( bias.dr() > 0 )
+                {
+                    // dst is below _h
+                    f0 = _FacingD;
+                    f1 = ( bias.dc() > 0 ) ? _FacingC : _FacingE;
+                }
+                else
+                {
+                    // dst is above _h
+                    f0 = _FacingA;
+                    f1 = ( bias.dc() > 0 ) ? _FacingB : _FacingF;
+                }
+                std::cout << "Facing choices for " << _h << " are " << f0 << " and " << f1 << std::endl;
 
-            Hex h0 = _h.at( f0 );
-            Hex h1 = _h.at( f1 );
+                Hex h0 = _h.at( f0 );
+                Hex h1 = _h.at( f1 );
+                std::cout << "Grid is " << settings.isOddGrid() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
 
-            std::cout << "Grid is " << settings.isOddGrid() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
+                if( dst == h0 )
+                    dir = f0;
+                else if( dst == h1 )
+                    dir = f1;
+                else
+                {
+                    // calculate their angles.
+                    b0 = h0.atan( dst );
+                    b1 = h1.atan( dst );
+                    std::cout << "Raw bearing from " << h0 << " to " << dst << " is " << b0 << " degrees, delta " << std::abs( bearing - b0 ) << std::endl;
+                    std::cout << "Raw bearing from " << h1 << " to " << dst << " is " << b1 << " degrees, delta " << std::abs( bearing - b1 ) << std::endl;
 
-            // calculate their angles.
-            b0 = h0.atan( dst );
-            b1 = h1.atan( dst );
-            std::cout << "Raw bearing from " << h0 << " to " << dst << " is " << b0 << " degrees." << std::endl;
-            std::cout << "Raw bearing from " << h1 << " to " << dst << " is " << b1 << " degrees." << std::endl;
-
-            // the hex with the angle *closest* to the reference angle is the winner!
-            if( std::abs( bearing - b0 ) < std::abs( bearing - b1 ) )
-            {
-                // h0 is winner
-                dir = f0;
-            }
-            else
-            {
-                // h1 is winner
-                dir = f1;
+                    // the hex with the angle *closest* to the reference angle is the winner!
+                    dir = ( std::abs( bearing - b0 ) < std::abs( bearing - b1 ) ) ? f0 : f1;
+                }
             }
             move( dir, 1 );
         }
