@@ -96,6 +96,8 @@ bool isEven(T x) { return (int)(!isOdd(x)); }
 // 		/ de\___/cd \		*
 // 		\___/   \___/
 //
+extern const double PI;
+extern const double PI2RADS;
 
 // define some handy Facing constants
 extern const Facing _FacingA;
@@ -199,7 +201,8 @@ public:
     Offset delta(const Facing& f) const;
     Hex& move( const Facing& dir, int distance = 1, const Facing& bias = _FacingA );
     Hex at( const Facing& f );
-    Hex& operator+( const Offset& off );
+    Hex& operator+=( const Offset& off );
+    Hex  operator+( const Offset& off );
     Offset operator-( const Hex& rhs ) const;
     bool operator==(const Hex& rhs ) const;
     bool operator!=(const Hex& rhs ) const;
@@ -208,6 +211,7 @@ public:
     bool operator>=(const Hex& rhs ) const;
     bool operator<=(const Hex& rhs ) const;
     hexfield_t neighbors() const;
+    double atan( const Hex& dst ) const;
     friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
 private:
     coord_t _col;
@@ -235,7 +239,7 @@ public:
     HexWalker( const Hex& hex, const bool allowDups = false );
     HexWalker( const HexWalker& obj );
 
-    void setOrigin( const Hex& hex );
+    HexWalker& setOrigin( const Hex& hex );
     // walk the hex around
     //     n   - list of digits - repeat the following command n times.
     //     A-F - move pen in that direction relative to face.

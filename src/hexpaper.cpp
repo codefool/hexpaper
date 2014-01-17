@@ -1,4 +1,5 @@
 #include "hexpaper"
+#include <cmath>
 
 // hexpaper - library for working with hexagon grids
 //
@@ -13,8 +14,8 @@ namespace hexpaper {
 
 coord_t _dc[6] = { 0, 1, 1, 0, -1, -1 };
 coord_t _dr[][6] = {
-    { -1,  0, 1, 1, 1,  0 },
-    { -1, -1, 0, 1, 0, -1 }
+    { -1, -1, 0, 1, 0, -1 },
+    { -1,  0, 1, 1, 1,  0 }
 };
 
 template <>
@@ -24,6 +25,9 @@ bool isOdd<char *>(char *c)
 template <>
 bool isOdd<std::string>(std::string s)
 { return isOdd<int>(atoi(s.c_str())); }
+
+const double PI{ 3.14159265359 };
+const double PI2RADS{ 180.0 / PI };
 
 const Facing _FacingA{ Facing::FACE_A };
 const Facing _FacingB{ Facing::FACE_B };
@@ -239,16 +243,22 @@ Hex& Hex::move( const Facing& dir, int distance, const Facing& bias )
     return *this;
 }
 
-Hex& Hex::operator+( const Offset& off )
+Hex& Hex::operator+=( const Offset& off )
 {
     _col += off.dc();
     _row += off.dr();
     return *this;
 }
 
+Hex Hex::operator+( const Offset& off )
+{
+    return Hex{ (coord_t)(_col + off.dc()), (coord_t)(_row + off.dr()) };
+}
+
 Hex Hex::at( const Facing& f )
 {
-    return Hex{ *this + delta( f ) };
+    Hex ret{ *this };
+    return ret + delta( f );
 }
 
 Offset Hex::operator-( const Hex& rhs ) const
@@ -297,6 +307,25 @@ bool Hex::operator<=(const Hex& rhs ) const
 hexfield_t Hex::neighbors() const
 {
     return hexCircField( *this, 1, 1 );
+}
+
+double Hex::atan( const Hex& dst ) const
+{
+    Offset bias{ dst - *this };
+    double ret;
+    if( 0 == bias.dc() )
+    {
+        ret = 90.0;
+    }
+    else
+    {
+        double ddr = (double)bias.dr();
+        double ddc = (double)bias.dc();
+        if( isOdd( bias.dc() ) ) // if dc is odd,
+            ddr += 0.5;          // then need to add .5 to the row bias
+        ret = std::atan( ddr / ddc ) * PI2RADS;
+    }
+    return ret;
 }
 
 std::ostream& operator << ( std::ostream& os, const Hex& hex )
@@ -365,10 +394,11 @@ HexWalker::HexWalker( const HexWalker& obj )
 , _allowDups{ obj._allowDups }
 {}
 
-void HexWalker::setOrigin( const Hex& hex )
+HexWalker& HexWalker::setOrigin( const Hex& hex )
 {
     _h = hex;
     penUp();
+    return *this;
 }
 
 // walk the hex around
@@ -410,23 +440,73 @@ HexWalker& HexWalker::walk( std::string&& path, const Facing& bias )
 HexWalker& HexWalker::seek( const Hex& dst )
 {
     penDown();
-    while( dst != _h )
+    Offset bias = dst - _h;
+    if( 0 == bias.dc() )
     {
-        Offset bias = dst - _h;
-        Facing dir;
-        if( 0 == bias.dc() )
+        // go straight up or down
+        while( dst != _h )
+            move( ( (bias.dr() < 0) ? _FacingD : _FacingA ), 1 );
+    }
+    else if( 0 == bias.dr() )
+    {
+        // go straight left or right, but more complicated since the
+        // course is staggered.
+    }
+    else
+    {
+        // fun fun fun
+        //
+        // calculate the angle from the _h to _dst and use that as the reference bearing.
+        double bearing{ _h.atan( dst ) };
+        std::cout << "Raw bearing from " << _h << " to " << dst << " is " << bearing << " degrees." << std::endl;
+
+        while( _h != dst )
         {
-            dir = (bias.dr() > 0) ? _FacingD : _FacingA;
+            // choose the two hex's that are in the direction
+            // How to this?
+            bias = dst - _h;
+            Facing dir;
+            Facing f0;
+            Facing f1;
+            double b0, b1;
+            if( 0 > bias.dc() )
+            {
+                // dst is above _h
+                f0 = _FacingA;
+                f1 = ( 0 < bias.dr() ) ? _FacingB : _FacingF;
+            }
+            else
+            {
+                // dst is below _h
+                f0 = _FacingD;
+                f1 = ( 0 < bias.dr() ) ? _FacingC : _FacingE;
+            }
+            std::cout << "Facing choices for " << _h << " are " << f0 << " and " << f1 << std::endl;
+
+            Hex h0 = _h.at( f0 );
+            Hex h1 = _h.at( f1 );
+
+            std::cout << "Grid is " << settings.isOddGrid() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
+
+            // calculate their angles.
+            b0 = h0.atan( dst );
+            b1 = h1.atan( dst );
+            std::cout << "Raw bearing from " << h0 << " to " << dst << " is " << b0 << " degrees." << std::endl;
+            std::cout << "Raw bearing from " << h1 << " to " << dst << " is " << b1 << " degrees." << std::endl;
+
+            // the hex with the angle *closest* to the reference angle is the winner!
+            if( std::abs( bearing - b0 ) < std::abs( bearing - b1 ) )
+            {
+                // h0 is winner
+                dir = f0;
+            }
+            else
+            {
+                // h1 is winner
+                dir = f1;
+            }
+            move( dir, 1 );
         }
-        else if( bias.dc() < 0 )
-        {
-            dir = (bias.dr() > 0) ? _FacingE : _FacingF;
-        }
-        else // bias.dc() > 0
-        {
-            dir = (bias.dr() > 0) ? _FacingC : _FacingB;
-        }
-        move( dir, 1 );
     }
     return *this;
 }

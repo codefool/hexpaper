@@ -124,12 +124,21 @@ int main() {
         std::cout << std::endl;
     }
     {
-        settings.setOddGrid(false);
-        Hex org{ 10, 10 };
+        settings.setOddGrid(true);
+        Hex org{ 5, 5 };
         Hex dst{ 1, 1 };
         HexWalker w{ org };
         w.seek( dst );
         std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
+        dst = Hex{ 1, 10 };
+        w.setOrigin( Hex{ 5, 5 } ).seek( Hex{ 1, 10 } );
+        std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
+        //dst = Hex{ 10, 1 };
+        //w.setOrigin( org ).seek( dst );
+        //std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
+        //dst = Hex{ 10, 10 };
+        //w.setOrigin( org ).seek( dst );
+        //std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
     }
 
     std::cout << "=== End Run ===" << std::endl;
