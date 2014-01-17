@@ -200,6 +200,10 @@ Offset::Offset(const Offset& obj )
 
 Offset::~Offset() {}
 
+Offset Offset::operator~() const
+{
+	return Offset( std::abs( _dc ), std::abs( _dr ) );
+}
 
 Hex::Hex( coord_t col, coord_t row)
 : _col{col}, _row{row}

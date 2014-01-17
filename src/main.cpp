@@ -125,8 +125,8 @@ int main() {
     }
     {
         settings.setOddGrid(false);
-        Hex org{ 1, 3 };
-        Hex dst{ 6, 5 };
+        Hex org{ 10, 10 };
+        Hex dst{ 1, 1 };
         HexWalker w{ org };
         w.seek( dst );
         std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;

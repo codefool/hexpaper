@@ -86,13 +86,15 @@ template <typename T>
 bool isEven(T x) { return (int)(!isOdd(x)); }
 
 //  Primary Facings:
-//       ___
-//   ___/ A \___
-//  / F \___/ B \  *
-//  \___/   \___/
-//  / E \___/ C \  *
-//  \___/ D \___/
-//      \___/
+//       ___     ___
+// 		/fa \___/ab \		*
+// 	    \___/ A \___/
+// 	 ___/ F \___/ B \___
+// 	/ef \___/   \___/bc \	*
+// 	\___/ E \___/ C \___/
+// 		\___/ D \___/
+// 		/ de\___/cd \		*
+// 		\___/   \___/
 //
 
 // define some handy Facing constants
@@ -177,6 +179,7 @@ public:
     Offset(coord_t dc, coord_t dr);
     Offset(const Offset& obj );
     ~Offset();
+    Offset operator~() const;
     inline coord_t dc( void ) const { return _dc; }
     inline coord_t dr( void ) const { return _dr; }
 private:
