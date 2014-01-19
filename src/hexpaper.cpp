@@ -26,8 +26,9 @@ template <>
 bool isOdd<std::string>(std::string s)
 { return isOdd<int>(atoi(s.c_str())); }
 
-const double PI{ 3.14159265359 };
-const double PI2RADS{ 180.0 / PI };
+const double PI     { 3.141592654 };
+const double PI2RADS{ 180.0 / PI  };
+const double SQRT3  { 1.732050808 };
 
 const Facing _FacingA{ Facing::FACE_A };
 const Facing _FacingB{ Facing::FACE_B };
@@ -44,7 +45,7 @@ Facing::Facing( const Face f )
 Facing::Facing( const char face )
 : _face{ FACE_A }
 {
-    char c{::tolower(face)};
+    char c{(char)::tolower(face)};
     if( 'a' <= c && c <= 'f' )
         _face = (Face)(c - 'a');
 }
@@ -209,6 +210,12 @@ Offset Offset::operator~() const
 	return Offset( std::abs( _dc ), std::abs( _dr ) );
 }
 
+std::ostream& operator << (std::ostream& os, const Offset& obj )
+{
+	os << '[' << obj.dc() << ',' << obj.dr() << ']';
+	return os;
+}
+
 Hex::Hex( coord_t col, coord_t row)
 : _col{col}, _row{row}
 {}
@@ -228,7 +235,7 @@ Hex::~Hex() {}
 Offset Hex::delta( const Facing& f ) const
 {
     coord_t dc = _dc[f];
-    coord_t dr = _dr[ isOdd( _col ) ^ settings.gridOrientation() ][f];
+    coord_t dr = _dr[ isOdd( _col ) ^ settings.gridDomination() ][f];
     return Offset(dc,dr);
 }
 
@@ -283,13 +290,13 @@ bool Hex::operator!=(const Hex& rhs ) const
 // - If a is closer to the left edge, then a < b.
 bool Hex::operator> (const Hex& rhs ) const
 {
-    // FIXME: This is dependent on grid orientation
+    // FIXME: This is dependent on grid domination
     return _col < rhs._col || _row < rhs._row;
 }
 
 bool Hex::operator< (const Hex& rhs ) const
 {
-    // FIXME: This is dependent on grid orientation
+    // FIXME: This is dependent on grid domination
     return _col > rhs._col || _row > rhs._row;
 }
 
@@ -309,6 +316,15 @@ hexfield_t Hex::neighbors() const
     return hexCircField( *this, 1, 1 );
 }
 
+// atan - return angle (in degrees) of this hex to the dst hex.
+//
+// This is based on the principle that an individual hexagon on the grid
+// is a collection of six equilateral triangles joined at a single vertex,
+// then we can get a Cartesian "angle" on the hex grid. Assign the length
+// of a side of each triangle 2, and split the equilateral into two right
+// triangles with sides base=1, h=sqrt(3), and hyp=2. Using these, and
+// the offsets between here and there, we can deduce real-world distances.
+//
 double Hex::atan( const Hex& dst ) const
 {
     Offset bias{ dst - *this };
@@ -319,10 +335,27 @@ double Hex::atan( const Hex& dst ) const
     }
     else
     {
-        double ddr = (double)bias.dr();
-        double ddc = (double)bias.dc();
-        if( isOdd( bias.dc() ) ) // if dc is odd,
-            ddr += 0.5;          // then need to add .5 to the row bias
+        double ddc = (double)bias.dc();					// the number of whole column hex's
+        double ddr = (double)bias.dr();					// the number of whole row hex's
+        double adj = 0.0;								// no adjustment
+        if( isOdd( col() ) && isEven( dst.col() ) )
+        {
+        	adj = ( bias.dr() > 0 ) ? -0.5 : 0.5;
+        }
+        else if( isEven( col() ) && isOdd( dst.col() ) && bias.dr() > 0 )
+        {
+        	adj = ( bias.dr() > 0 ) ? 0.5 : -0.5;
+        }
+        if( settings.isOddGrid() )
+        	adj *= -1.0;
+        if( bias.dr() < 0 )
+        	adj *= -1.0;
+        ddr += adj;
+        std::cout << 'c' << isOdd( dst.col() ) << 'r' << isOdd( row() ) << 'g' << settings.isOddGrid() << bias << ' '
+        		  << *this << ':' << dst << " ddc:" << ddc << " ddr:" << ddr << " adj:" << adj;
+        ddr *= 2 * SQRT3;
+        ddc *= 3;
+        std::cout << " dc:" << ddc << " dr:" << ddr << std::endl;
         ret = std::atan( ddr / ddc ) * PI2RADS;
     }
     return ret;
@@ -461,7 +494,7 @@ HexWalker& HexWalker::seek( const Hex& dst )
         while( _h != dst )
         {
             bias = dst - _h;
-            if( isOdd( _h.col()) ^ settings.isOddGrid() )
+            if( isOdd( _h.col()) ^ settings.gridDomination() )
                 dir = ( bias.dc() > 0 ) ? _FacingC : _FacingE;
             else
                 dir = ( bias.dc() > 0 ) ? _FacingB : _FacingF;
@@ -474,7 +507,7 @@ HexWalker& HexWalker::seek( const Hex& dst )
         //
         // calculate the angle from the _h to _dst and use that as the reference bearing.
         double bearing{ _h.atan( dst ) };
-        //std::cout << "Raw bearing from " << _h << " to " << dst << " is " << bearing << " degrees." << std::endl;
+        std::cout << "Raw bearing from " << _h << " to " << dst << " is " << bearing << " degrees." << std::endl;
 
         while( _h != dst )
         {
@@ -510,7 +543,7 @@ HexWalker& HexWalker::seek( const Hex& dst )
 
                 Hex h0 = _h.at( f0 );
                 Hex h1 = _h.at( f1 );
-                //std::cout << "Grid is " << settings.isOddGrid() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
+                //std::cout << "Grid is " << settings.gridDomination() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
 
                 if( dst == h0 )
                     dir = f0;
@@ -683,7 +716,7 @@ _settings& _settings::instance()
     return instance;
 }
 
-const signed char _settings::gridOrientation() const
+const signed char _settings::gridDomination() const
 {
     return oddGrid ? 0 : 1;
 }

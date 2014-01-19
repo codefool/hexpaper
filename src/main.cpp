@@ -14,12 +14,20 @@ using namespace org::codefool::hexpaper;
 
 int main() {
     std::cout << "__cplusplus " << __cplusplus << std::endl;
+    std::cout << "Odd Grid" << std::endl;
+    settings.setOddGrid( true );
     Hex h(5,5);
+    for( auto dst: {Hex{6,4},Hex{6,5},Hex{4,4},Hex{4,5}})
+    {
+    	std::cout << "atan" << h << ' ' << dst << " is " << h.atan( dst ) << std::endl;
+    }
+
     for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
     {
         Offset off = h.delta( (Facing::Face)f );
         std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
     }
+    std::cout << "Even Grid" << std::endl;
     settings.setOddGrid( false );
     for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
     {
@@ -119,6 +127,7 @@ int main() {
     }
     {
         hexfield_t y = h.neighbors();
+        std::cout << "Neighbors of " << h << " are ";
         for( auto x : *y )
             std::cout << x;
         std::cout << std::endl;
@@ -134,9 +143,10 @@ int main() {
         }
     }
     {
+        settings.setOddGrid( true );
         std::cout << "***** Exhaustive seek test for 10x10 grid ****" << std::endl;
         HexWalker w;
-        for( auto org : {Hex{5,5},Hex{5,4},Hex{4,5},Hex{4,4}} )
+        for( auto org : {Hex{5,5}}) //,Hex{5,4},Hex{4,5},Hex{4,4}} )
         {
             for( coord_t col = 1; col < 11; ++col )
             {

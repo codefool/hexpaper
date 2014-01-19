@@ -35,7 +35,7 @@ class Hex;
 class HexWalker;
 class _settings;
 
-// Grid Orientation
+// Grid Domination
 //
 // An odd-grid is on where the hex of an odd-column is above (at facing B or F) of the
 // same row number. An even-grid is the opposite:
@@ -96,8 +96,14 @@ bool isEven(T x) { return (int)(!isOdd(x)); }
 // 		/ de\___/cd \		*
 // 		\___/   \___/
 //
+// A hexagon is made up of six equalateral triangles. If we assign the side of
+// that triangle a length 2, then it can be divided into two right triangles
+// of the dimensions base(1), height(sqrt(3)), and hyp(2).
+//
+//
 extern const double PI;
 extern const double PI2RADS;
+extern const double SQRT3;
 
 // define some handy Facing constants
 extern const Facing _FacingA;
@@ -184,6 +190,7 @@ public:
     Offset operator~() const;
     inline coord_t dc( void ) const { return _dc; }
     inline coord_t dr( void ) const { return _dr; }
+    friend std::ostream& operator << (std::ostream& os, const Offset& obj );
 private:
     coord_t _dc;
     coord_t _dr;
@@ -272,7 +279,7 @@ private:
 class _settings
 {
 private:
-    bool oddGrid;       // true if grid is odd-oriented, false if even
+    bool oddGrid;       // true if grid is odd-dominated, false if even
     bool clippingOn;    // true if clipping is on
 
     _settings();
@@ -280,7 +287,7 @@ private:
 
 public:
     static _settings& instance();
-    const signed char gridOrientation() const;
+    const signed char gridDomination() const;
     const bool isOddGrid() const;
     bool setOddGrid(bool val);
     const bool isClippingOn() const;
