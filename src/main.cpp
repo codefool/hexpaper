@@ -17,11 +17,11 @@ int main() {
     std::cout << "Odd Grid" << std::endl;
     settings.setOddGrid( true );
     Hex h(5,5);
-    for( auto dst: {Hex{6,5},Hex{6,6},Hex{4,5},Hex{4,6},Hex{6,4},Hex{6,7},Hex{4,4},Hex{4,7}})
+    for( auto dst: {Hex{5,1},Hex{5,10},Hex{3,5},Hex{7,5},Hex{6,5},Hex{6,6},Hex{4,5},Hex{4,6},Hex{6,4},Hex{6,7},Hex{4,4},Hex{4,7}})
     {
     	std::cout << "atan" << h << ' ' << dst << " is " << h.atan( dst ) << std::endl;
     }
-
+    return 0;
     for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
     {
         Offset off = h.delta( (Facing::Face)f );
@@ -142,20 +142,19 @@ int main() {
             std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
         }
     }
-    return 0;
     {
         settings.setOddGrid( true );
-        std::cout << "***** Exhaustive seek test for 10x10 grid ****" << std::endl;
+        std::cout << "***** Exhaustive seek test for 5x5 grid ****" << std::endl;
         HexWalker w;
-        for( auto org : {Hex{5,5}}) //,Hex{5,4},Hex{4,5},Hex{4,4}} )
+        for( auto org : {Hex{3,3}}) //,Hex{5,4},Hex{4,5},Hex{4,4}} )
         {
-            for( coord_t col = 1; col < 11; ++col )
+            for( coord_t col = 1; col < 6; ++col )
             {
-                for( coord_t row = 1; row < 11; ++row )
+                for( coord_t row = 1; row < 6; ++row )
                 {
                     Hex dst{ col, row };
                     w.clear().setOrigin( org ).seek( dst );
-                    std::cout << org << ' ' << dst << ' ' << w << std::endl;
+                    std::cout << "*****" << org << ' ' << dst << ' ' << w << std::endl << std::endl;
                 }
             }
         }

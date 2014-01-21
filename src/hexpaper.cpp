@@ -236,7 +236,7 @@ Hex::~Hex() {}
 Offset Hex::delta( const Facing& f ) const
 {
     coord_t dc = _dc[f];
-    coord_t dr = _dr[ isOdd( _col ) ^ settings.gridDomination() ][f];
+    coord_t dr = _dr[ isOdd( _col ) ^ settings.isOddGrid() ][f];
     return Offset(dc,dr);
 }
 
@@ -332,7 +332,11 @@ double Hex::atan( const Hex& dst ) const
     double ret;
     if( 0 == bias.dc() )
     {
-        ret = 90.0;
+        ret = ( bias.dr() < 0 ) ? 90.0 : 270.0;
+    }
+    else if( 0 == bias.dr() && isEven( bias.dc() ) )
+    {
+        ret = ( bias.dc() < 0 ) ? 180.0 : 0.0;
     }
     else
     {
@@ -347,9 +351,11 @@ double Hex::atan( const Hex& dst ) const
         std::cout << 'c' << isOdd( dst.col() ) << 'r' << isOdd( row() ) << 'g' << settings.isOddGrid() << bias << ' '
         		  << *this << ':' << dst << " adj:" << adj;
         double ddc = (double)bias.dc() * 3;
-        double ddr = ( std::abs( (double)bias.dr() ) + adj ) * TWOSQRT3;
+        double sgn = std::signbit( bias.dr() ) ? -1.0 : 1.0;
+        double ddr = (std::abs( (double)bias.dr() ) + adj ) * TWOSQRT3 * sgn;
         ret = std::atan( ddr / ddc ) * PI2RADS;
-        std::cout << " ddc:" << ddc << " ddr:" << ddr << " atan:" << ret << std::endl;
+        std::cout << " ddc:" << ddc << " ddr:" << ddr << " atan:" << ret;
+        std::cout << std::endl;
     }
     return ret;
 }
@@ -487,7 +493,7 @@ HexWalker& HexWalker::seek( const Hex& dst )
         while( _h != dst )
         {
             bias = dst - _h;
-            if( isOdd( _h.col()) ^ settings.gridDomination() )
+            if( isOdd( _h.col()) ^ settings.isOddGrid() )
                 dir = ( bias.dc() > 0 ) ? _FacingC : _FacingE;
             else
                 dir = ( bias.dc() > 0 ) ? _FacingB : _FacingF;
@@ -536,7 +542,7 @@ HexWalker& HexWalker::seek( const Hex& dst )
 
                 Hex h0 = _h.at( f0 );
                 Hex h1 = _h.at( f1 );
-                std::cout << "Grid is " << settings.gridDomination() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
+                std::cout << "Grid:" << settings.isOddGrid() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
 
                 if( dst == h0 )
                     dir = f0;
@@ -709,7 +715,7 @@ _settings& _settings::instance()
     return instance;
 }
 
-const signed char _settings::gridDomination() const
+const int _settings::gridDominance() const
 {
     return oddGrid ? 0 : 1;
 }

@@ -288,7 +288,7 @@ private:
 
 public:
     static _settings& instance();
-    const signed char gridDomination() const;
+    const int gridDominance() const;
     const bool isOddGrid() const;
     bool setOddGrid(bool val);
     const bool isClippingOn() const;
