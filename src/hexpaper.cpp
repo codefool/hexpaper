@@ -338,18 +338,13 @@ double Hex::atan( const Hex& dst ) const
         double ddc = (double)bias.dc();					// the number of whole column hex's
         double ddr = (double)bias.dr();					// the number of whole row hex's
         double adj = 0.0;								// no adjustment
-        if( isOdd( col() ) && isEven( dst.col() ) )
+        if( isOdd( col() ) ^ isOdd( dst.col() ) )
         {
-        	adj = ( bias.dr() > 0 ) ? -0.5 : 0.5;
+        	if( settings.isOddGrid() )
+        		adj = ( bias.dr() >= 0 ) ? 0.5 : -0.5;
+        	else
+        		adj = ( bias.dr() > 0 ) ? -0.5 :  0.5;
         }
-        else if( isEven( col() ) && isOdd( dst.col() ) && bias.dr() > 0 )
-        {
-        	adj = ( bias.dr() > 0 ) ? 0.5 : -0.5;
-        }
-        if( settings.isOddGrid() )
-        	adj *= -1.0;
-        if( bias.dr() < 0 )
-        	adj *= -1.0;
         ddr += adj;
         std::cout << 'c' << isOdd( dst.col() ) << 'r' << isOdd( row() ) << 'g' << settings.isOddGrid() << bias << ' '
         		  << *this << ':' << dst << " ddc:" << ddc << " ddr:" << ddr << " adj:" << adj;
