@@ -104,6 +104,7 @@ bool isEven(T x) { return (int)(!isOdd(x)); }
 extern const double PI;
 extern const double PI2RADS;
 extern const double SQRT3;
+extern const double TWOSQRT3;
 
 // define some handy Facing constants
 extern const Facing _FacingA;

@@ -26,9 +26,10 @@ template <>
 bool isOdd<std::string>(std::string s)
 { return isOdd<int>(atoi(s.c_str())); }
 
-const double PI     { 3.141592654 };
-const double PI2RADS{ 180.0 / PI  };
-const double SQRT3  { 1.732050808 };
+const double PI      { 3.141592654 };
+const double PI2RADS { 180.0 / PI  };
+const double SQRT3   { 1.732050808 };
+const double TWOSQRT3{ 2 * SQRT3   };
 
 const Facing _FacingA{ Facing::FACE_A };
 const Facing _FacingB{ Facing::FACE_B };
@@ -335,23 +336,20 @@ double Hex::atan( const Hex& dst ) const
     }
     else
     {
-        double ddc = (double)bias.dc();					// the number of whole column hex's
-        double ddr = (double)bias.dr();					// the number of whole row hex's
-        double adj = 0.0;								// no adjustment
+        double adj{ 0.0 };
         if( isOdd( col() ) ^ isOdd( dst.col() ) )
         {
         	if( settings.isOddGrid() )
-        		adj = ( bias.dr() >= 0 ) ? 0.5 : -0.5;
+        		adj = ( bias.dr() >= 0 ) ? -0.5 : 0.5;
         	else
-        		adj = ( bias.dr() > 0 ) ? -0.5 :  0.5;
+        		adj = ( bias.dr() > 0 ) ?   0.5 :-0.5;
         }
-        ddr += adj;
         std::cout << 'c' << isOdd( dst.col() ) << 'r' << isOdd( row() ) << 'g' << settings.isOddGrid() << bias << ' '
-        		  << *this << ':' << dst << " ddc:" << ddc << " ddr:" << ddr << " adj:" << adj;
-        ddr *= 2 * SQRT3;
-        ddc *= 3;
-        std::cout << " dc:" << ddc << " dr:" << ddr << std::endl;
+        		  << *this << ':' << dst << " adj:" << adj;
+        double ddc = (double)bias.dc() * 3;
+        double ddr = ( std::abs( (double)bias.dr() ) + adj ) * TWOSQRT3;
         ret = std::atan( ddr / ddc ) * PI2RADS;
+        std::cout << " ddc:" << ddc << " ddr:" << ddr << " atan:" << ret << std::endl;
     }
     return ret;
 }
@@ -534,11 +532,11 @@ HexWalker& HexWalker::seek( const Hex& dst )
                     f0 = _FacingA;
                     f1 = ( bias.dc() > 0 ) ? _FacingB : _FacingF;
                 }
-                //std::cout << "Facing choices for " << _h << " are " << f0 << " and " << f1 << std::endl;
+                std::cout << "Facing choices for " << _h << " are " << f0 << " and " << f1 << std::endl;
 
                 Hex h0 = _h.at( f0 );
                 Hex h1 = _h.at( f1 );
-                //std::cout << "Grid is " << settings.gridDomination() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
+                std::cout << "Grid is " << settings.gridDomination() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
 
                 if( dst == h0 )
                     dir = f0;
@@ -549,8 +547,8 @@ HexWalker& HexWalker::seek( const Hex& dst )
                     // calculate their angles.
                     b0 = h0.atan( dst );
                     b1 = h1.atan( dst );
-                    //std::cout << "Raw bearing from " << h0 << " to " << dst << " is " << b0 << " degrees, delta " << std::abs( bearing - b0 ) << std::endl;
-                    //std::cout << "Raw bearing from " << h1 << " to " << dst << " is " << b1 << " degrees, delta " << std::abs( bearing - b1 ) << std::endl;
+                    std::cout << "Raw bearing from " << h0 << " to " << dst << " is " << b0 << " degrees, delta " << std::abs( bearing - b0 ) << std::endl;
+                    std::cout << "Raw bearing from " << h1 << " to " << dst << " is " << b1 << " degrees, delta " << std::abs( bearing - b1 ) << std::endl;
 
                     // the hex with the angle *closest* to the reference angle is the winner!
                     dir = ( std::abs( bearing - b0 ) < std::abs( bearing - b1 ) ) ? f0 : f1;

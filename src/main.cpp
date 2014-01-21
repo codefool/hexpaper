@@ -17,7 +17,7 @@ int main() {
     std::cout << "Odd Grid" << std::endl;
     settings.setOddGrid( true );
     Hex h(5,5);
-    for( auto dst: {Hex{6,4},Hex{6,5},Hex{4,4},Hex{4,5}})
+    for( auto dst: {Hex{6,5},Hex{6,6},Hex{4,5},Hex{4,6},Hex{6,4},Hex{6,7},Hex{4,4},Hex{4,7}})
     {
     	std::cout << "atan" << h << ' ' << dst << " is " << h.atan( dst ) << std::endl;
     }
@@ -142,6 +142,7 @@ int main() {
             std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
         }
     }
+    return 0;
     {
         settings.setOddGrid( true );
         std::cout << "***** Exhaustive seek test for 10x10 grid ****" << std::endl;
