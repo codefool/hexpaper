@@ -344,9 +344,9 @@ double Hex::atan( const Hex& dst ) const
         if( isOdd( col() ) ^ isOdd( dst.col() ) )
         {
         	if( settings.isOddGrid() )
-        		adj = ( bias.dr() >= 0 ) ? -0.5 : 0.5;
+        		adj = ( bias.dr() >= 0 ) ?  0.5 :-0.5;
         	else
-        		adj = ( bias.dr() > 0 ) ?   0.5 :-0.5;
+        		adj = ( bias.dr() > 0 ) ?  -0.5 : 0.5;
         }
         std::cout << 'c' << isOdd( dst.col() ) << 'r' << isOdd( row() ) << 'g' << settings.isOddGrid() << bias << ' '
         		  << *this << ':' << dst << " adj:" << adj;
@@ -355,6 +355,18 @@ double Hex::atan( const Hex& dst ) const
         double ddr = (std::abs( (double)bias.dr() ) + adj ) * TWOSQRT3 * sgn;
         ret = std::atan( ddr / ddc ) * PI2RADS;
         std::cout << " ddc:" << ddc << " ddr:" << ddr << " atan:" << ret;
+        if( bias.dc() > 0 )
+        {
+        	if( bias.dr() >= 0 )
+        		ret = 360 - ret;
+        	else
+        		ret = 0 - ret;
+        }
+        else
+        {
+        	ret = 180 - ret;
+        }
+        std::cout << ' ' << ret;
         std::cout << std::endl;
     }
     return ret;

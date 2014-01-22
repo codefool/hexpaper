@@ -21,7 +21,7 @@ int main() {
     {
     	std::cout << "atan" << h << ' ' << dst << " is " << h.atan( dst ) << std::endl;
     }
-    return 0;
+
     for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
     {
         Offset off = h.delta( (Facing::Face)f );
