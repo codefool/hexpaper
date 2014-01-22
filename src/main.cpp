@@ -17,7 +17,7 @@ int main() {
     std::cout << "Odd Grid" << std::endl;
     settings.setOddGrid( true );
     Hex h(5,5);
-    for( auto dst: {Hex{5,1},Hex{5,10},Hex{3,5},Hex{7,5},Hex{6,5},Hex{6,6},Hex{4,5},Hex{4,6},Hex{6,4},Hex{6,7},Hex{4,4},Hex{4,7}})
+    for( auto dst: {Hex{5,1},Hex{5,10},Hex{3,5},Hex{7,5},Hex{6,5},Hex{6,6},Hex{4,5},Hex{4,6},Hex{6,4},Hex{6,7},Hex{4,4},Hex{4,7},Hex{4,3}})
     {
     	std::cout << "atan" << h << ' ' << dst << " is " << h.atan( dst ) << std::endl;
     }

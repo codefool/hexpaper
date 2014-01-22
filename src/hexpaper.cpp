@@ -506,9 +506,9 @@ HexWalker& HexWalker::seek( const Hex& dst )
         {
             bias = dst - _h;
             if( isOdd( _h.col()) ^ settings.isOddGrid() )
-                dir = ( bias.dc() > 0 ) ? _FacingC : _FacingE;
-            else
                 dir = ( bias.dc() > 0 ) ? _FacingB : _FacingF;
+            else
+                dir = ( bias.dc() > 0 ) ? _FacingC : _FacingE;
             move( dir, 1 );
         }
     }
