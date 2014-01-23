@@ -17,24 +17,32 @@ int main() {
     std::cout << "Odd Grid" << std::endl;
     settings.setOddGrid( true );
     Hex h(5,5);
-    for( auto dst: {Hex{5,1},Hex{5,10},Hex{3,5},Hex{7,5},Hex{6,5},Hex{6,6},Hex{4,5},Hex{4,6},Hex{6,4},Hex{6,7},Hex{4,4},Hex{4,7},Hex{4,3}})
     {
-    	std::cout << "atan" << h << ' ' << dst << " is " << h.atan( dst ) << std::endl;
+        Hex dst{1,1};
+        Hex h0{3,2};
+        Hex h1{2,2};
+        std::cout << dst << ' ' << h0 << ' ' << dst.atan(h0) << h1 << ' ' << dst.atan(h1) << std::endl;
     }
+    return 0;
+    {
+        for( auto dst: {Hex{5,1},Hex{5,10},Hex{3,5},Hex{7,5},Hex{6,5},Hex{6,6},Hex{4,5},Hex{4,6},Hex{6,4},Hex{6,7},Hex{4,4},Hex{4,7},Hex{4,3}})
+        {
+            std::cout << "atan" << h << ' ' << dst << " is " << h.atan( dst ) << std::endl;
+        }
 
-    for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
-    {
-        Offset off = h.delta( (Facing::Face)f );
-        std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
+        for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
+        {
+            Offset off = h.delta( (Facing::Face)f );
+            std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
+        }
+        std::cout << "Even Grid" << std::endl;
+        settings.setOddGrid( false );
+        for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
+        {
+            Offset off = h.delta( (Facing::Face)f );
+            std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
+        }
     }
-    std::cout << "Even Grid" << std::endl;
-    settings.setOddGrid( false );
-    for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
-    {
-        Offset off = h.delta( (Facing::Face)f );
-        std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
-    }
-
     std::cout << "isEven(0)   " << org::codefool::hexpaper::isEven(0) << ' ' << org::codefool::hexpaper::isOdd(0) << std::endl;
     std::cout << "isEven(1)   " << org::codefool::hexpaper::isEven(1) << ' ' << org::codefool::hexpaper::isOdd(1) << std::endl;
     std::cout << "isEven('1') " << org::codefool::hexpaper::isEven('1') << ' ' << org::codefool::hexpaper::isOdd('1') << std::endl;
@@ -144,10 +152,10 @@ int main() {
     }
     {
         settings.setOddGrid( true );
-        std::cout << "***** Exhaustive seek test for 5x5 grid ****" << std::endl;
         HexWalker w;
-        for( auto org : {Hex{3,3}}) //,Hex{5,4},Hex{4,5},Hex{4,4}} )
+        for( auto org : {Hex{3,3},Hex{5,4},Hex{4,5},Hex{4,4}} )
         {
+            std::cout << "***** Exhaustive seek test for 5x5 grid with origin " << org << "****" << std::endl;
             for( coord_t col = 1; col < 6; ++col )
             {
                 for( coord_t row = 1; row < 6; ++row )
