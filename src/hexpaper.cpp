@@ -344,9 +344,9 @@ double Hex::atan( const Hex& dst ) const
         if( isOdd( col() ) ^ isOdd( dst.col() ) )
         {
         	if( settings.isOddGrid() )
-        		adj = ( bias.dr() >= 0 ) ?  0.5 :-0.5;
+        		adj = ( bias.dr() > 0 ) ? -0.5 :  0.5;
         	else
-        		adj = ( bias.dr() > 0 ) ?  -0.5 : 0.5;
+        		adj = ( bias.dr() > 0 ) ?   0.5 : -0.5;
         }
         std::cout << 'c' << isOdd( dst.col() ) << 'r' << isOdd( row() ) << 'g' << settings.isOddGrid() << bias << ' '
         		  << *this << ':' << dst << " adj:" << adj;
@@ -652,6 +652,11 @@ hexfield_t HexWalker::trail( void )
 const Hex& HexWalker::hex( void ) const
 {
     return _h;
+}
+
+Hex HexWalker::operator*() const
+{
+	return _h;
 }
 
 std::ostream& operator<<( std::ostream& os, const HexWalker& hw )

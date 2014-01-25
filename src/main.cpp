@@ -21,7 +21,17 @@ int main() {
         Hex dst{1,1};
         Hex h0{3,2};
         Hex h1{2,2};
-        std::cout << dst << ' ' << h0 << ' ' << dst.atan(h0) << h1 << ' ' << dst.atan(h1) << std::endl;
+        h1.atan(Hex{1,2});
+        std::cout << dst << ' ' << h0 << ' ' << h0.atan(dst) << h1 << ' ' << h1.atan(dst) << std::endl;
+    }
+    {
+    	Hex org{4,4};
+    	for( coord_t c : {3,4,5} )
+    		for( coord_t r : {2,3,4,5,6})
+    		{
+    			Hex dst{c,r};
+    			std::cout << org << ' ' << dst << ' ' << org.atan( dst ) << std::endl;
+    		}
     }
     return 0;
     {

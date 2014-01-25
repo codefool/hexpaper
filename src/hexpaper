@@ -267,6 +267,7 @@ public:
     HexWalker& sort( void );
     hexfield_t trail( void );
     const Hex& hex( void ) const;
+    Hex operator*() const;
     friend std::ostream& operator<<( std::ostream& os, const HexWalker& hw );
 
 private:
