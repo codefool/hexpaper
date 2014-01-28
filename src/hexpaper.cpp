@@ -1,5 +1,6 @@
 #include "hexpaper"
 #include <cmath>
+#include <sstream>
 
 // hexpaper - library for working with hexagon grids
 //
@@ -471,8 +472,7 @@ HexWalker& HexWalker::walk( std::string&& path, const Facing& bias )
         }
         else if( 'a' <= c && c <= 'f' )
         {
-            Facing f{c};
-            move( f >> bias, cnt );
+            move( Facing(c) >> bias, cnt );
             cnt = 0;
         }
         else
@@ -482,12 +482,22 @@ HexWalker& HexWalker::walk( std::string&& path, const Facing& bias )
             case 'u': penUp();   break;
             case 'm': push();    break;
             case 'r': pop();     break;
+            default:
+            {
+                std::stringstream msg;
+                msg << "Unknown command issued to HexWalker::walk - '" << c << "'";
+                throw msg.str();
+            }
             }
     }
     return *this;
 }
 
 // seek the given hex from the origin hex, starting with the given face
+//
+//
+//
+//
 HexWalker& HexWalker::seek( const Hex& dst )
 {
     penDown();

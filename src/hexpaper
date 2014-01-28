@@ -345,6 +345,11 @@ hexfield_t hexPath( const Hex& org, const Vector& v, const Facing::Face bias = F
 //
 hexfield_t makeHexField( const Hex& org, const std::string& path, const Facing::Face face = Facing::FACE_A );
 
+hexfield_t hexFieldAnd( const hexfield_t& lhs, const hexfield_t& rhs );
+hexfield_t hexFieldOr ( const hexfield_t& lhs, const hexfield_t& rhs );
+hexfield_t hexFieldXor( const hexfield_t& lhs, const hexfield_t& rhs );
+hexfield_t hexFieldNot( const hexfield_t& lhs, const hexfield_t& rhs );
+
 struct HexInfo
 {
 	const Hex	_ulc;			// upper left corner of hex field
