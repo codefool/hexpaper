@@ -344,16 +344,15 @@ double Hex::atan( const Hex& dst ) const
         double adj{ 0.0 };
         if( isOdd( col() ) ^ isOdd( dst.col() ) )
         {
-        	if( settings.isOddGrid() )
-        		adj = ( bias.dr() > 0 ) ? -0.5 :  0.5;
+        	if( isOdd( col() ) ^ settings.isOddGrid() )
+        		adj = ( bias.dr() <= 0 ) ? -0.5 : 0.5;
         	else
-        		adj = ( bias.dr() > 0 ) ?   0.5 : -0.5;
+        		adj = ( bias.dr() < 0 ) ?  -0.5 : 0.5;
         }
         std::cout << 'c' << isOdd( dst.col() ) << 'r' << isOdd( row() ) << 'g' << settings.isOddGrid() << bias << ' '
         		  << *this << ':' << dst << " adj:" << adj;
         double ddc = (double)bias.dc() * 3;
-        double sgn = std::signbit( bias.dr() ) ? -1.0 : 1.0;
-        double ddr = (std::abs( (double)bias.dr() ) + adj ) * TWOSQRT3 * sgn;
+        double ddr = ( (double)bias.dr() + adj ) * TWOSQRT3;
         ret = std::atan( ddr / ddc ) * PI2RADS;
         std::cout << " ddc:" << ddc << " ddr:" << ddr << " atan:" << ret;
         if( bias.dc() > 0 )
@@ -528,7 +527,7 @@ HexWalker& HexWalker::seek( const Hex& dst )
         //
         // calculate the angle from the _h to _dst and use that as the reference bearing.
         double bearing{ _h.atan( dst ) };
-        //std::cout << "Raw bearing from " << _h << " to " << dst << " is " << bearing << " degrees." << std::endl;
+        std::cout << "   " << "Raw bearing from " << _h << " to " << dst << " is " << bearing << " degrees." << std::endl;
 
         while( _h != dst )
         {
@@ -560,11 +559,10 @@ HexWalker& HexWalker::seek( const Hex& dst )
                     f0 = _FacingA;
                     f1 = ( bias.dc() > 0 ) ? _FacingB : _FacingF;
                 }
-                //std::cout << "Facing choices for " << _h << " are " << f0 << " and " << f1 << std::endl;
 
                 Hex h0 = _h.at( f0 );
                 Hex h1 = _h.at( f1 );
-                //std::cout << "Grid:" << settings.isOddGrid() << " hex at " << f0 << " is " << h0 << ", hex at " << f1 << " is " << h1 << std::endl;
+                std::cout << "   " << "Facing choices for " << _h << " are " << f0 << h0 << " and " << f1 << h1 << std::endl;
 
                 if( dst == h0 )
                     dir = f0;
@@ -579,14 +577,17 @@ HexWalker& HexWalker::seek( const Hex& dst )
                     {
                         std::cout << "***** " << h0 << " and " << h1 << " have identical angles " << b0 << " and " << b1 << "?????" << std::endl;
                     }
-                    //std::cout << "Raw bearing from " << h0 << " to " << dst << " is " << b0 << " degrees, delta " << std::abs( bearing - b0 ) << std::endl;
-                    //std::cout << "Raw bearing from " << h1 << " to " << dst << " is " << b1 << " degrees, delta " << std::abs( bearing - b1 ) << std::endl;
+                    std::cout << "   " << "Raw bearing from " << h0 << " to " << dst << " is " << b0 << " degrees, delta " << std::abs( bearing - b0 ) << std::endl;
+                    std::cout << "   " << "Raw bearing from " << h1 << " to " << dst << " is " << b1 << " degrees, delta " << std::abs( bearing - b1 ) << std::endl;
 
                     // the hex with the angle *closest* to the reference angle is the winner!
+                    // FIXME: What if there is a tie?
                     dir = ( std::abs( bearing - b0 ) < std::abs( bearing - b1 ) ) ? f0 : f1;
                 }
             }
+            std::cout << "   " << _h << " moved dir " << dir << " to ";
             move( dir, 1 );
+            std::cout << _h << std::endl;
         }
     }
     return *this;
