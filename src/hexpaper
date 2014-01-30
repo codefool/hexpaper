@@ -1,4 +1,5 @@
-// hexpaper - library for working with hexagon grids 
+// hexpaper - library for working with hexagon grids
+
 //
 // Copyright (C) 2014 Garyl Hester
 //
@@ -12,6 +13,9 @@
 // methods:
 //  hexAtVector
 //
+//
+// Sources:
+//    http://www.redblobgames.com/grids/hexagons/
 //
 #ifndef ORG_CODEFOOL_HEXPAPER_INCLUDED_
 #define ORG_CODEFOOL_HEXPAPER_INCLUDED_
@@ -27,6 +31,17 @@
 namespace org {
 namespace codefool {
 namespace hexpaper {
+
+// bitmap
+// dominance .x   0 = even, 1 = odd
+// q or r    x.   0 = column (q), 1 = row (r)
+enum class GridType : unsigned char
+{
+    EVENQ = 0x00,
+    EVENR = 0x01,
+    ODDQ  = 0x02,
+    ODDR  = 0x03
+};
 
 // Forward define all classes
 class Facing;
@@ -174,6 +189,69 @@ private:
     Face    _face;
 };
 
+// Triplet object template.
+//
+//
+template<class T>
+struct Triplet
+{
+    T _x;
+    T _y;
+    T _z;
+
+    Triplet<T>( T x, T y, T z );
+    Triplet<T>( const Triplet<T>& obj );
+    Triplet<T> operator*(const T val) const;
+    Triplet<T> operator+(const T val) const;
+    Triplet<T> operator+(const Triplet<T>& rhs) const;
+    template<class U>
+    friend std::ostream& operator<<( std::ostream& os, Triplet<U>& obj );
+};
+
+template<class U>
+std::ostream& operator<<( std::ostream& os, Triplet<U>& obj )
+{
+    return os << '{' << obj._x << ',' << obj._y << ',' << obj._z << '}';
+}
+
+// Cube coordianate object.
+//
+//
+class Cube
+{
+public:
+    Cube( coord_t x= 0, coord_t y = 0, coord_t z = 0 );
+    Cube( const Cube& obj );
+    Cube( const Hex& hex );
+    Cube( const Triplet<coord_t>& tri );
+
+    Cube operator*(const coord_t val) const;
+    Cube operator+(const coord_t val) const;
+    Cube operator+(const Cube& rhs ) const;
+    Triplet<double> operator*(const double val) const;
+
+    inline coord_t x() const;
+    inline coord_t y() const;
+    inline coord_t z() const;
+
+    coord_t distance( const Cube& rhs ) const;
+    std::vector<Cube> path( const Cube& dst ) const;
+
+    Hex toHex();
+
+    friend std::ostream& operator<<( std::ostream& os, const Cube& obj );
+
+private:
+    Triplet<coord_t> _c;
+};
+
+Triplet<coord_t> hex2cube( coord_t q, coord_t r );
+Triplet<coord_t> hex2cube( const Hex& hex );
+Hex cube2hex( const coord_t x, const coord_t y, const coord_t z );
+Hex cube2hex( const Triplet<coord_t>& tri );
+
+Triplet<coord_t> round( const Triplet<double>& rhs );
+
 // Vector - container for direction and distance.
 struct Vector
 {
@@ -200,7 +278,7 @@ private:
 class Hex
 {
 public:
-    Hex( coord_t col, coord_t row);
+    Hex( coord_t col, coord_t row, const GridType t = GridType::ODDQ );
     Hex( const Hex& obj );
     Hex( Offset& off );
     virtual ~Hex();
@@ -212,6 +290,7 @@ public:
     Hex& operator+=( const Offset& off );
     Hex  operator+( const Offset& off );
     Offset operator-( const Hex& rhs ) const;
+    Cube toCube() const;
     bool operator==(const Hex& rhs ) const;
     bool operator!=(const Hex& rhs ) const;
     bool operator> (const Hex& rhs ) const;
@@ -222,8 +301,9 @@ public:
     double atan( const Hex& dst ) const;
     friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
 private:
-    coord_t _col;
-    coord_t _row;
+    coord_t  _col;
+    coord_t  _row;
+    GridType _type;
 };
 
 class Heading
@@ -281,8 +361,8 @@ private:
 class _settings
 {
 private:
-    bool oddGrid;       // true if grid is odd-dominated, false if even
-    bool clippingOn;    // true if clipping is on
+    GridType    _gridType;
+    bool        _clipping;
 
     _settings();
     ~_settings();
@@ -294,6 +374,7 @@ public:
     bool setOddGrid(bool val);
     const bool isClippingOn() const;
     bool setClipping(bool val);
+    GridType gridType() const;
 };
 
 extern _settings& settings;     // forward decl
@@ -359,6 +440,16 @@ struct HexInfo
 	: _ulc{ ulc }, _lrc{ lrc }, _hexs{ hexs }
 	{}
 	friend std::ostream& operator << ( std::ostream& os, const HexInfo& hi );
+};
+
+class HexField
+{
+public:
+    HexField( bool pointy = false, bool odd = true );
+
+private:
+    bool    _pointy;        // true for pointy hex's, or false for flat hex's
+    bool    _odd;           // true for odd, false for even
 };
 
 

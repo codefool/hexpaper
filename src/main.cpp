@@ -14,6 +14,20 @@ using namespace org::codefool::hexpaper;
 
 int main() {
     std::cout << "__cplusplus " << __cplusplus << std::endl;
+    {
+        Triplet<double> a(1.5, 2.1, -3.8 );
+        Triplet<coord_t> b = round(a);
+        std::cout << b << std::endl;
+        Hex org{ 5, 5 };
+        Hex dst{ 1, 1 };
+        std::vector<Cube> path{ Cube(org).path(dst) };
+        std::cout << "Path from " << org << " to " << dst << std::endl;
+        for( auto x : path )
+            std::cout << x;
+        std::cout << std::endl;
+    }
+    return 0;
+
     std::cout << "Odd Grid" << std::endl;
     settings.setOddGrid( true );
     Hex h(5,5);
@@ -176,6 +190,8 @@ int main() {
             }
         }
     }
+
+    Cube cube(0,0,0);
 
     std::cout << "=== End Run ===" << std::endl;
     return 0;

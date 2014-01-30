@@ -196,7 +196,202 @@ Facing::iterator& Facing::iterator::next()
     return ++(*this);
 }
 
+// struct template Triplet implementation
+template<class T>
+Triplet<T>::Triplet( T x, T y, T z )
+: _x( x ), _y( y ), _z( z )
+{}
 
+template<class T>
+Triplet<T>::Triplet( const Triplet<T>& obj )
+: _x( obj._x ), _y( obj._y ), _z( obj._z )
+{}
+
+template<class T>
+Triplet<T> Triplet<T>::operator*(const T val) const
+{
+    return Triplet<T>( _x * val, _y * val, _z * val );
+}
+
+template<class T>
+Triplet<T> Triplet<T>::operator+(const T val) const
+{
+    return Triplet<T>( _x + val, _y + val, _z + val );
+}
+
+template<class T>
+Triplet<T> Triplet<T>::operator+(const Triplet<T>& rhs) const
+{
+    return Triplet<T>( _x + rhs._x, _y + rhs._y, _z + rhs._z );
+}
+
+Triplet<coord_t> round( const Triplet<double>& rhs )
+{
+    coord_t rx = (coord_t)(std::round(rhs._x));
+    coord_t ry = (coord_t)(std::round(rhs._y));
+    coord_t rz = (coord_t)(std::round(rhs._z));
+
+    coord_t dx = std::abs( rx - rhs._x );
+    coord_t dy = std::abs( ry - rhs._y );
+    coord_t dz = std::abs( rz - rhs._z );
+
+    if( dx > dy && dx > dz )
+        rx = -ry-rz;
+    else if( dy > dz )
+        ry = -rx-rz;
+    else
+        rz = -rx-ry;
+
+    return Triplet<coord_t>( rx, ry, rz );
+}
+
+Triplet<coord_t> hex2cube( coord_t q, coord_t r )
+{
+    coord_t x;
+    coord_t y;
+    coord_t z;
+
+    switch( settings.gridType() )
+    {
+    case GridType::EVENQ:
+        x = q;
+        z = r - (q + (q&1)) / 2;
+        y = -x-z;
+        break;
+    case GridType::EVENR:
+        z = r;
+        x = q - (r+(r&1)) / 2;
+        y = -x-z;
+        break;
+    case GridType::ODDQ:
+        x = q;
+        z = r - (q - (q&1)) / 2;
+        y = -x-z;
+        break;
+    case GridType::ODDR:
+        z = r;
+        x = q - (r - (r&1)) / 2;
+        y = -x-z;
+        break;
+    }
+    return Triplet<coord_t>( x, y, z );
+}
+
+Triplet<coord_t> hex2cube( const Hex& hex )
+{
+    return hex2cube( hex.col(), hex.row() );
+}
+
+Hex cube2hex( const coord_t x, const coord_t y, const coord_t z )
+{
+    coord_t r;
+    coord_t q;
+
+    switch( settings.gridType() )
+    {
+    case GridType::EVENQ:
+        q = x;
+        r = z + (x+(x&1)) / 2;
+        break;
+    case GridType::EVENR:
+        r = z;
+        q = x + (z+(z&1)) / 2;
+        break;
+    case GridType::ODDQ:
+        r = z;
+        q = x + (z-(z&1)) / 2;
+        break;
+    case GridType::ODDR:
+        r = z;
+        q = x + (z-(z&1)) / 2;
+        break;
+    }
+    return Hex(r,q);
+}
+
+Hex cube2hex( const Triplet<coord_t>& tri )
+{
+    return cube2hex( tri._x, tri._y, tri._z );
+}
+
+// class template Cube implementation
+Cube::Cube( coord_t x, coord_t y, coord_t z )
+: _c( x, y, z )
+{}
+
+Cube::Cube( const Hex& hex )
+: _c( 0, 0, 0 )
+{
+    _c = hex2cube( hex );
+}
+
+Cube::Cube( const Cube& obj )
+: _c( obj._c )
+{}
+
+Cube::Cube( const Triplet<coord_t>& tri )
+: _c( tri )
+{}
+
+// convert the cube coordinates to appropriate hex coords
+Hex Cube::toHex()
+{
+    return cube2hex( _c );
+}
+
+Cube Cube::operator*(const coord_t val) const
+{
+    return Cube( _c._x * val, _c._y * val, _c._z * val );
+}
+
+Cube Cube::operator+(const coord_t val) const
+{
+    return Cube( _c._x + val, _c._y + val, _c._z + val );
+}
+
+Cube Cube::operator+(const Cube& rhs ) const
+{
+    return Cube( _c._x + rhs._c._x, _c._y + rhs._c._y, _c._z + rhs._c._z );
+}
+
+Triplet<double> Cube::operator*(const double val) const
+{
+    return Triplet<double>( _c._x * val, _c._y * val, _c._z * val );
+}
+
+inline coord_t Cube::x() const { return _c._x; }
+inline coord_t Cube::y() const { return _c._y; }
+inline coord_t Cube::z() const { return _c._z; }
+
+coord_t Cube::distance( const Cube& rhs ) const
+{
+    return (coord_t)((  std::abs( _c._x - rhs._c._x )
+                      + std::abs( _c._y - rhs._c._y )
+                      + std::abs( _c._z - rhs._c._z ) ) / 2 );
+}
+
+std::vector<Cube> Cube::path( const Cube& dst ) const
+{
+    std::vector<Cube> ret;
+    coord_t N = distance( dst );
+    for( auto i = 0; i <= N; ++i )
+    {
+        double iN( i / (double)N );
+        Triplet<double> A = *this * ( 1.0 - iN );
+        Triplet<double> B = dst * iN;
+        Triplet<double> C = A + B;
+        Cube R( round( C ) );
+        ret.push_back( R );
+    }
+    return ret;
+}
+
+std::ostream& operator<<( std::ostream& os, const Cube& obj )
+{
+    return os << obj._c;
+}
+
+// class Offset implementation
 Offset::Offset( coord_t c, coord_t r )
 : _dc( c ), _dr( r )
 {}
@@ -218,12 +413,14 @@ std::ostream& operator << (std::ostream& os, const Offset& obj )
 	return os;
 }
 
-Hex::Hex( coord_t col, coord_t row)
-: _col{col}, _row{row}
+// class Hex implementation
+
+Hex::Hex( coord_t col, coord_t row, const GridType t )
+: _col{col}, _row{row}, _type{ t }
 {}
 
 Hex::Hex( const Hex& obj )
-: _col{ obj._col }, _row{ obj._row }
+: _col{ obj._col }, _row{ obj._row }, _type{ obj._type }
 {}
 
 Hex::Hex( Offset& off )
@@ -310,6 +507,11 @@ bool Hex::operator>=(const Hex& rhs ) const
 bool Hex::operator<=(const Hex& rhs ) const
 {
     return *this < rhs || *this == rhs;
+}
+
+Cube Hex::toCube() const
+{
+    return Cube(*this);
 }
 
 // return a field of all the hex's immediately surrounding this one.
@@ -734,8 +936,8 @@ hexfield_t hexdrant( const Hex& org, const Facing dir, const int range )
 }
 
 _settings::_settings()
-    : oddGrid( false )
-    , clippingOn( true )
+    : _gridType( GridType::ODDQ )
+    , _clipping( true )
     {}
 
 _settings::~_settings()
@@ -747,31 +949,35 @@ _settings& _settings::instance()
     return instance;
 }
 
-const int _settings::gridDominance() const
-{
-    return oddGrid ? 0 : 1;
-}
-
 const bool _settings::isOddGrid() const
 {
-    return oddGrid;
+    return (unsigned char)_gridType & 0x01;
 }
 
 bool _settings::setOddGrid( bool val )
 {
-    std::swap( oddGrid, val );
-    return val;
+    bool ret( isOddGrid() );
+    if( val )
+        _gridType = (GridType)((unsigned char)_gridType | 0x01);
+    else
+        _gridType = (GridType)((unsigned char)_gridType & 0xFE);
+    return ret;
 }
 
 const bool _settings::isClippingOn() const
 {
-    return clippingOn;
+    return _clipping;
 }
 
 bool _settings::setClipping( bool val )
 {
-    std::swap( clippingOn, val );
+    std::swap( _clipping, val );
     return val;
+}
+
+GridType _settings::gridType() const
+{
+    return _gridType;
 }
 
 
