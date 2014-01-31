@@ -55,6 +55,16 @@ Triplet<double> Cube::operator*(const double val) const
     return Triplet<double>( _c._x * val, _c._y * val, _c._z * val );
 }
 
+bool Cube::operator==(const Cube& rhs ) const
+{
+	return x() == rhs.x() && y() == rhs.y() && z() == rhs.z();
+}
+
+bool Cube::operator!=(const Cube& rhs ) const
+{
+	return !(*this == rhs);
+}
+
 inline coord_t Cube::x() const { return _c._x; }
 inline coord_t Cube::y() const { return _c._y; }
 inline coord_t Cube::z() const { return _c._z; }
@@ -71,16 +81,21 @@ CubePath Cube::path( const Cube& dst ) const
 {
     CubePath ret;
     coord_t N = distance( dst );
-    for( auto i = 0; i <= N; ++i )
+    if( *this == dst )
+    	ret.push_back( toHex() );
+    else
     {
-        double iN( i / (double)N );
-        Triplet<double> A = *this * ( 1.0 - iN );
-        Triplet<double> B = dst * iN;
-        Triplet<double> C = A + B;
-        Cube R( round( C ) );
-        Hex H( R );
-        std::cout << "A:" << A << " B:" << B << " C:" << C << " R:" << R << " H:" << H << std::endl;
-        ret.push_back( R );
+		for( auto i = 0; i <= N; ++i )
+		{
+			double iN( i / (double)N );
+			Triplet<double> A = *this * ( 1.0 - iN );
+			Triplet<double> B = dst * iN;
+			Triplet<double> C = A + B;
+			Cube R( round( C ) );
+			Hex H( R );
+			//std::cout << "A:" << A << " B:" << B << " C:" << C << " R:" << R << " H:" << H << std::endl;
+			ret.push_back( R );
+		}
     }
     return ret;
 }
@@ -96,9 +111,9 @@ CubeCoord round( const Triplet<double>& rhs )
     coord_t ry = (coord_t)(std::round(rhs._y));
     coord_t rz = (coord_t)(std::round(rhs._z));
 
-    coord_t dx = std::abs( rx - rhs._x );
-    coord_t dy = std::abs( ry - rhs._y );
-    coord_t dz = std::abs( rz - rhs._z );
+    double dx = std::abs( rx - rhs._x );
+    double dy = std::abs( ry - rhs._y );
+    double dz = std::abs( rz - rhs._z );
 
     if( dx > dy && dx > dz )
         rx = -ry-rz;

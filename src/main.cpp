@@ -31,7 +31,6 @@ int main() {
             std::cout << x;
         std::cout << std::endl;
     }
-    return 0;
 
     std::cout << "Odd Grid" << std::endl;
     settings.setOddGrid( true );
@@ -170,27 +169,19 @@ int main() {
     }
     {
         settings.setOddGrid( true );
-        Hex org{ 5, 5 };
-        HexWalker w{ org };
-        for( auto dst : {Hex{1,1},Hex{1,10},Hex{10,1},Hex{10,10},Hex{5,10},Hex{1,5},Hex{5,1},Hex{5,10}} )
-        {
-            w.clear().setOrigin( org ).seek( dst );
-            std::cout << "Tracing from " << org << " to " << dst << " is " << w << std::endl;
-        }
-    }
-    {
-        settings.setOddGrid( true );
-        HexWalker w;
         for( auto org : {Hex{3,3},Hex{5,4},Hex{4,5},Hex{4,4}} )
         {
-            std::cout << "***** Exhaustive seek test for 5x5 grid with origin " << org << "****" << std::endl;
+            std::cout << "***** Exhaustive path test for 5x5 grid with origin " << org << "****" << std::endl;
             for( coord_t col = 1; col < 6; ++col )
             {
                 for( coord_t row = 1; row < 6; ++row )
                 {
                     Hex dst{ col, row };
-                    w.clear().setOrigin( org ).seek( dst );
-                    std::cout << "*****" << org << ' ' << dst << ' ' << w << std::endl << std::endl;
+                    HexPath path = cubepath2hex( Cube( org ).path( dst ) );
+                    std::cout << "*****";
+                    for( auto h : path )
+                    	std::cout << h;
+                    std::cout << std::endl;
                 }
             }
         }

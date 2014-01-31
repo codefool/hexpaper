@@ -262,6 +262,8 @@ public:
     Cube operator+(const coord_t val) const;
     Cube operator+(const Cube& rhs ) const;
     Triplet<double> operator*(const double val) const;
+    bool operator==(const Cube& rhs ) const;
+    bool operator!=(const Cube& rhs ) const;
 
     inline coord_t x() const;
     inline coord_t y() const;
@@ -373,7 +375,6 @@ public:
     //     M   - mark - push this hex on the stack.
     //     R   - recall - pop hex off the stack (and make that hex the current hex.)
     HexWalker& walk( std::string&& path, const Facing& bias = _FacingA );
-    HexWalker& seek( const Hex& dst );
     HexWalker& penUp( void );
     HexWalker& penDown( void );
     HexWalker& push( void );
