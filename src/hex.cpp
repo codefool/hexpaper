@@ -121,6 +121,35 @@ hexfield_t Hex::neighbors() const
     return hexCircField( *this, 1, 1 );
 }
 
+std::pair<double,double> Hex::hex2pixel( const Hex& h ) const
+{
+    coord_t q = h.col();
+    coord_t r = h.row();
+    double size = (double)settings.hexSize();
+    double x;
+    double y;
+    switch( settings.gridType() )
+    {
+    case GridType::EVENQ:
+        x = size * 3/2 * q;
+        y = size * _SQRT3 * (r - 0.5 * (q&1));
+        break;
+    case GridType::EVENR:
+        x = size * _SQRT3 * (q - 0.5 * (r&1));
+        y = size * 3/2 * r;
+        break;
+    case GridType::ODDQ:
+        x = size * 3/2 * q;
+        y = size * _SQRT3 * (r + 0.5 * (q&1));
+        break;
+    case GridType::ODDR:
+        x = size * _SQRT3 * (q + 0.5 * (r&1));
+        y = size * 3/2 * r;
+        break;
+    }
+    return std::pair<double,double>( x, y );
+}
+
 // atan - return angle (in degrees) of this hex to the dst hex.
 //
 // This is based on the principle that an individual hexagon on the grid
@@ -130,30 +159,28 @@ hexfield_t Hex::neighbors() const
 // triangles with sides base=1, h=sqrt(3), and hyp=2. Using these, and
 // the offsets between here and there, we can deduce real-world distances.
 //
-// clue here: http://www-cs-students.stanford.edu/~amitp/Articles/Hexagon1.html
 //
 double Hex::atan( const Hex& dst ) const
 {
-    // hex2x -> _INV2SQRT3 + (col()-1)*_SQRT3DIV2
-    // hex2y -> row() - 0.5*(col()&1)
-    double x0 = _INV2SQRT3 + (col()-1)*_SQRT3DIV2;
-    double y0 = row() - 0.5*(col()%2);
-    double x1 = _INV2SQRT3 + (dst.col()-1)*_SQRT3DIV2;
-    double y1 = dst.row() - 0.5*(dst.col()%2);
+    if( *this == dst )
+        return 0.0;
 
-    double dx = x1 - x0;
-    double dy = y0 - y1;
+    std::pair<double,double> h0 = hex2pixel( *this );
+    std::pair<double,double> h1 = hex2pixel( dst );
+
+    double dy = h1.first  - h0.first;
+    double dx = h1.second - h0.second;
 
     if( 0.0 == dx )
-    {
-        return ( 0.0 <= dy ) ? 90.0 : 270.0;
-    }
+        // straight up or down
+        return ( dy >= 0.0 ) ? 270.0 : 90.0;
+
     double t = std::atan(dy/dx) * _PI2RADS;
-    if( t >= 0 )
+    if( t >= 0.0 )
     {
-        return ( dx > 0 ) ? t : t + 180.0;
+        return ( dx > 0.0 ) ? t + 180.0 : t;
     }
-    return ( dx > 0 ) ? t + 360.0 : t + 180.0;
+    return ( dx > 0.0 ) ? t + 360.0 : t + 180.0;
 }
 
 // answer the face that the origin hex (*this) is presenting to the dst hex.

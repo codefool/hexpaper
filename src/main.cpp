@@ -170,18 +170,18 @@ int main() {
         settings.setOddGrid( true );
         for( auto org : {Hex{3,3},Hex{5,4},Hex{4,5},Hex{4,4}} )
         {
-            std::cout << "***** Exhaustive path test for 5x5 grid with origin " << org << "****" << std::endl;
-            for( coord_t col = 1; col < 6; ++col )
+            std::cout << "***** Exhaustive path test for 6x6 grid with origin " << org << "****" << std::endl;
+            for( coord_t col = 1; col < 7; ++col )
             {
-                for( coord_t row = 1; row < 6; ++row )
+                for( coord_t row = 1; row < 7; ++row )
                 {
                     Hex dst{ col, row };
                     HexPath path = cubepath2hex( Cube( org ).path( dst ) );
                     std::cout << "*****";
                     for( auto h : path )
                     	std::cout << h;
-                    std::cout << "atan:" << org.atan( dst )
-                              << "bearing:" << org.bearing( dst )
+                    std::cout << " atan:" << org.atan( dst )
+                              << " bearing:" << org.bearing( dst )
                               << std::endl;
                 }
             }

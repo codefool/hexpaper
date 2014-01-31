@@ -162,6 +162,7 @@ hexfield_t hexdrant( const Hex& org, const Facing dir, const int range )
 _settings::_settings()
     : _gridType( GridType::ODDQ )
     , _clipping( true )
+    , _hexSize( 2 )
     {}
 
 _settings::~_settings()
@@ -204,6 +205,10 @@ GridType _settings::gridType() const
     return _gridType;
 }
 
+int _settings::hexSize() const
+{
+    return _hexSize;
+}
 
 _settings & settings = _settings::instance();
 

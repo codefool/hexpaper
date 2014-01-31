@@ -343,6 +343,7 @@ public:
     bool operator>=(const Hex& rhs ) const;
     bool operator<=(const Hex& rhs ) const;
     hexfield_t neighbors() const;
+    std::pair<double,double> hex2pixel( const Hex& h ) const;
     double atan( const Hex& dst ) const;
     Facing bearing( const Hex& dst ) const;
     friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
@@ -407,6 +408,7 @@ class _settings
 private:
     GridType    _gridType;
     bool        _clipping;
+    int         _hexSize;
 
     _settings();
     ~_settings();
@@ -419,6 +421,7 @@ public:
     const bool isClippingOn() const;
     bool setClipping(bool val);
     GridType gridType() const;
+    int      hexSize() const;
 };
 
 extern _settings& settings;     // forward decl
