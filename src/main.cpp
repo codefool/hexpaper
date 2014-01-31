@@ -13,7 +13,6 @@ using namespace std;
 using namespace org::codefool::hexpaper;
 
 int main() {
-    std::cout << "__cplusplus " << __cplusplus << std::endl;
     {
         Triplet<double> a(1.5, 2.1, -3.8 );
         Triplet<coord_t> b = round(a);
@@ -181,7 +180,9 @@ int main() {
                     std::cout << "*****";
                     for( auto h : path )
                     	std::cout << h;
-                    std::cout << std::endl;
+                    std::cout << "atan:" << org.atan( dst )
+                              << "bearing:" << org.bearing( dst )
+                              << std::endl;
                 }
             }
         }

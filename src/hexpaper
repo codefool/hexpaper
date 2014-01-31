@@ -121,10 +121,12 @@ bool isEven(T x) { return (int)(!isOdd(x)); }
 // of the dimensions base(1), height(sqrt(3)), and hyp(2).
 //
 //
-extern const double PI;
-extern const double PI2RADS;
-extern const double SQRT3;
-extern const double TWOSQRT3;
+extern const double _PI;
+extern const double _PI2RADS;
+extern const double _SQRT3;
+extern const double _2SQRT3;
+extern const double _SQRT3DIV2;
+extern const double _INV2SQRT3;
 
 // define some handy Facing constants
 extern const Facing _FacingA;
@@ -149,7 +151,7 @@ public:
         FACE_CNT
     };
 
-    Facing( const Face f = FACE_A );
+    Facing( const Face f = FACE_A, const Face f2 = FACE_CNT );
     Facing( const char face );
     Facing( const Facing& obj );
     Facing operator-( const Facing& rhs ) const;
@@ -165,7 +167,10 @@ public:
     Facing operator<<( const int bias ) const;
     Facing operator>>( const int bias ) const;
     Face face( void ) const { return _face; }
+    Face face2( void ) const { return _face2; }
     operator int() const { return (int)_face; }
+    Facing& setDoubleFace( const Face f2 );
+    bool isDouble() const;
     friend std::ostream& operator << (std::ostream& os, const Facing& f );
 
     class iterator : public std::iterator<std::forward_iterator_tag, Face>
@@ -192,6 +197,7 @@ public:
 
 private:
     Face    _face;
+    Face    _face2;
 };
 
 // Triplet object template.
@@ -338,6 +344,7 @@ public:
     bool operator<=(const Hex& rhs ) const;
     hexfield_t neighbors() const;
     double atan( const Hex& dst ) const;
+    Facing bearing( const Hex& dst ) const;
     friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
 private:
     coord_t  _col;

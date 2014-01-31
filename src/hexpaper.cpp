@@ -27,10 +27,12 @@ template <>
 bool isOdd<std::string>(std::string s)
 { return isOdd<int>(atoi(s.c_str())); }
 
-const double PI      { 3.141592654 };
-const double PI2RADS { 180.0 / PI  };
-const double SQRT3   { 1.732050808 };
-const double TWOSQRT3{ 2 * SQRT3   };
+const double _PI       { 3.141592654  };
+const double _PI2RADS  { 180.0 / _PI  };
+const double _SQRT3    { 1.732050808  };
+const double _2SQRT3   { 2.0 * _SQRT3 };
+const double _SQRT3DIV2{ _SQRT3 / 2.0 };
+const double _INV2SQRT3{ 1 / _2SQRT3  };
 
 // class Offset implementation
 Offset::Offset( coord_t c, coord_t r )

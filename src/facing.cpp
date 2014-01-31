@@ -19,12 +19,12 @@ const Facing _FacingE{ Facing::FACE_E };
 const Facing _FacingF{ Facing::FACE_F };
 const Facing _FacingX{ Facing::FACE_CNT };
 
-Facing::Facing( const Face f )
-: _face(f)
+Facing::Facing( const Face f, const Face f2 )
+: _face(f), _face2(f2)
 {}
 
 Facing::Facing( const char face )
-: _face{ FACE_A }
+: _face{ FACE_A }, _face2( FACE_CNT )
 {
     char c{(char)::tolower(face)};
     if( 'a' <= c && c <= 'f' )
@@ -32,7 +32,7 @@ Facing::Facing( const char face )
 }
 
 Facing::Facing( const Facing& obj )
-: _face{ obj._face }
+: _face{ obj._face }, _face2{ obj._face2 }
 {}
 
 Facing Facing::operator+( const Facing& rhs ) const
@@ -113,9 +113,22 @@ Facing Facing::operator>>( const int bias ) const
     return Facing{ (Facing::Face)(( _face + bias ) % FACE_CNT ) };
 }
 
+Facing& Facing::setDoubleFace( const Face f2 )
+{
+    _face2 = f2;
+    return *this;
+}
+
+bool Facing::isDouble() const
+{
+    return _face2 != FACE_CNT;
+}
+
 std::ostream& operator << (std::ostream& os, const Facing& f )
 {
     os << (char)( 'A' + f.face() );
+    if( f.isDouble() )
+        os << (char)( 'A' + f.face2() );
     return os;
 }
 

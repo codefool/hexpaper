@@ -130,49 +130,49 @@ hexfield_t Hex::neighbors() const
 // triangles with sides base=1, h=sqrt(3), and hyp=2. Using these, and
 // the offsets between here and there, we can deduce real-world distances.
 //
+// clue here: http://www-cs-students.stanford.edu/~amitp/Articles/Hexagon1.html
+//
 double Hex::atan( const Hex& dst ) const
 {
-    Offset bias{ dst - *this };
-    double ret;
-    if( 0 == bias.dc() )
+    // hex2x -> _INV2SQRT3 + (col()-1)*_SQRT3DIV2
+    // hex2y -> row() - 0.5*(col()&1)
+    double x0 = _INV2SQRT3 + (col()-1)*_SQRT3DIV2;
+    double y0 = row() - 0.5*(col()%2);
+    double x1 = _INV2SQRT3 + (dst.col()-1)*_SQRT3DIV2;
+    double y1 = dst.row() - 0.5*(dst.col()%2);
+
+    double dx = x1 - x0;
+    double dy = y0 - y1;
+
+    if( 0.0 == dx )
     {
-        ret = ( bias.dr() < 0 ) ? 90.0 : 270.0;
+        return ( 0.0 <= dy ) ? 90.0 : 270.0;
     }
-    else if( 0 == bias.dr() && isEven( bias.dc() ) )
+    double t = std::atan(dy/dx) * _PI2RADS;
+    if( t >= 0 )
     {
-        ret = ( bias.dc() < 0 ) ? 180.0 : 0.0;
+        return ( dx > 0 ) ? t : t + 180.0;
     }
-    else
+    return ( dx > 0 ) ? t + 360.0 : t + 180.0;
+}
+
+// answer the face that the origin hex (*this) is presenting to the dst hex.
+// if it is ambiguous, return the double facing.
+Facing Hex::bearing( const Hex& dst ) const
+{
+    int bearing = (int)std::round( atan( dst ) );
+    // 0  ..59 : B
+    // 60 ..119: A
+    // 120..179: F
+    // 180..239: E
+    // 240..299: D
+    // 300..359: C
+    Facing f = _FacingB << ( bearing / 60 );
+    if( 0.0 == ( bearing % 60 ) )
     {
-        double adj{ 0.0 };
-        if( isOdd( col() ) ^ isOdd( dst.col() ) )
-        {
-        	if( isOdd( col() ) ^ settings.isOddGrid() )
-        		adj = ( bias.dr() <= 0 ) ? -0.5 : 0.5;
-        	else
-        		adj = ( bias.dr() < 0 ) ?  -0.5 : 0.5;
-        }
-        std::cout << 'c' << isOdd( dst.col() ) << 'r' << isOdd( row() ) << 'g' << settings.isOddGrid() << bias << ' '
-        		  << *this << ':' << dst << " adj:" << adj;
-        double ddc = (double)bias.dc() * 3;
-        double ddr = ( (double)bias.dr() + adj ) * TWOSQRT3;
-        ret = std::atan( ddr / ddc ) * PI2RADS;
-        std::cout << " ddc:" << ddc << " ddr:" << ddr << " atan:" << ret;
-        if( bias.dc() > 0 )
-        {
-        	if( bias.dr() >= 0 )
-        		ret = 360 - ret;
-        	else
-        		ret = 0 - ret;
-        }
-        else
-        {
-        	ret = 180 - ret;
-        }
-        std::cout << ' ' << ret;
-        std::cout << std::endl;
+        f.setDoubleFace( ( f >> 1 ).face() );
     }
-    return ret;
+    return f;
 }
 
 std::ostream& operator << ( std::ostream& os, const Hex& hex )
