@@ -44,10 +44,12 @@ enum class GridType : unsigned char
 };
 
 // Forward define all classes
+template<class T> struct Triplet;
 class Facing;
 class Offset;
 class Hex;
 class HexWalker;
+class Cube;
 class _settings;
 
 // Grid Domination
@@ -82,8 +84,11 @@ class _settings;
 // Note that the dr values for odd/even col for odd grid are even/odd col for even grid.
 // Hence, we can determine which we should use by IS_ODD(col) XOR IS_ODD(grid)
 //
-typedef signed short                      coord_t;
-typedef std::shared_ptr<std::vector<Hex>> hexfield_t;
+typedef signed short                coord_t;
+typedef Triplet<coord_t> 			CubeCoord;
+typedef std::vector<Cube> 			CubePath;
+typedef std::vector<Hex>  			HexPath;
+typedef std::shared_ptr<HexPath> 	hexfield_t;
 
 extern coord_t _dc[6];
 extern coord_t _dr[][6];
@@ -207,6 +212,34 @@ struct Triplet
     template<class U>
     friend std::ostream& operator<<( std::ostream& os, Triplet<U>& obj );
 };
+// struct template Triplet implementation
+template<class T>
+Triplet<T>::Triplet( T x, T y, T z )
+: _x( x ), _y( y ), _z( z )
+{}
+
+template<class T>
+Triplet<T>::Triplet( const Triplet<T>& obj )
+: _x( obj._x ), _y( obj._y ), _z( obj._z )
+{}
+
+template<class T>
+Triplet<T> Triplet<T>::operator*(const T val) const
+{
+    return Triplet<T>( _x * val, _y * val, _z * val );
+}
+
+template<class T>
+Triplet<T> Triplet<T>::operator+(const T val) const
+{
+    return Triplet<T>( _x + val, _y + val, _z + val );
+}
+
+template<class T>
+Triplet<T> Triplet<T>::operator+(const Triplet<T>& rhs) const
+{
+    return Triplet<T>( _x + rhs._x, _y + rhs._y, _z + rhs._z );
+}
 
 template<class U>
 std::ostream& operator<<( std::ostream& os, Triplet<U>& obj )
@@ -223,7 +256,7 @@ public:
     Cube( coord_t x= 0, coord_t y = 0, coord_t z = 0 );
     Cube( const Cube& obj );
     Cube( const Hex& hex );
-    Cube( const Triplet<coord_t>& tri );
+    Cube( const CubeCoord& tri );
 
     Cube operator*(const coord_t val) const;
     Cube operator+(const coord_t val) const;
@@ -233,24 +266,27 @@ public:
     inline coord_t x() const;
     inline coord_t y() const;
     inline coord_t z() const;
+    inline CubeCoord c() const;
 
     coord_t distance( const Cube& rhs ) const;
-    std::vector<Cube> path( const Cube& dst ) const;
+    CubePath path( const Cube& dst ) const;
 
-    Hex toHex();
+    Hex toHex() const;
 
     friend std::ostream& operator<<( std::ostream& os, const Cube& obj );
 
 private:
-    Triplet<coord_t> _c;
+    CubeCoord _c;
 };
 
-Triplet<coord_t> hex2cube( coord_t q, coord_t r );
-Triplet<coord_t> hex2cube( const Hex& hex );
+CubeCoord hex2cube( coord_t q, coord_t r );
+CubeCoord hex2cube( const Hex& hex );
 Hex cube2hex( const coord_t x, const coord_t y, const coord_t z );
-Hex cube2hex( const Triplet<coord_t>& tri );
+Hex cube2hex( const CubeCoord& tri );
+CubePath hexpath2cube( const HexPath& hp );
+HexPath  cubepath2hex( const CubePath& cp );
 
-Triplet<coord_t> round( const Triplet<double>& rhs );
+CubeCoord round( const Triplet<double>& rhs );
 
 // Vector - container for direction and distance.
 struct Vector
@@ -278,9 +314,10 @@ private:
 class Hex
 {
 public:
-    Hex( coord_t col, coord_t row, const GridType t = GridType::ODDQ );
+    Hex( coord_t col, coord_t row );
     Hex( const Hex& obj );
     Hex( Offset& off );
+    Hex( const Cube& obj );
     virtual ~Hex();
     coord_t row( void ) const { return _row; }
     coord_t col( void ) const { return _col; }
@@ -303,7 +340,6 @@ public:
 private:
     coord_t  _col;
     coord_t  _row;
-    GridType _type;
 };
 
 class Heading

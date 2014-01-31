@@ -20,9 +20,14 @@ int main() {
         std::cout << b << std::endl;
         Hex org{ 5, 5 };
         Hex dst{ 1, 1 };
-        std::vector<Cube> path{ Cube(org).path(dst) };
+        CubePath path = Cube(org).path(dst);
+        HexPath hpath = cubepath2hex( path );
+
         std::cout << "Path from " << org << " to " << dst << std::endl;
         for( auto x : path )
+            std::cout << x;
+        std::cout << std::endl;
+        for( auto x : hpath )
             std::cout << x;
         std::cout << std::endl;
     }
