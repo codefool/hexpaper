@@ -159,6 +159,7 @@ std::pair<double,double> Hex::hex2pixel( const Hex& h ) const
 // triangles with sides base=1, h=sqrt(3), and hyp=2. Using these, and
 // the offsets between here and there, we can deduce real-world distances.
 //
+// http://www-cs-students.stanford.edu/~amitp/Articles/Hexagon1.html
 //
 double Hex::atan( const Hex& dst ) const
 {
@@ -168,19 +169,29 @@ double Hex::atan( const Hex& dst ) const
     std::pair<double,double> h0 = hex2pixel( *this );
     std::pair<double,double> h1 = hex2pixel( dst );
 
-    double dy = h1.first  - h0.first;
-    double dx = h1.second - h0.second;
+    double dx = h1.first  - h0.first;
+    double dy = h0.second - h1.second;
+    double t = -1;
+    double ret = 0;
 
     if( 0.0 == dx )
-        // straight up or down
-        return ( dy >= 0.0 ) ? 270.0 : 90.0;
-
-    double t = std::atan(dy/dx) * _PI2RADS;
-    if( t >= 0.0 )
     {
-        return ( dx > 0.0 ) ? t + 180.0 : t;
+        // straight up or down
+        ret = ( dy >= 0.0 ) ? 90.0 : 270.0;
     }
-    return ( dx > 0.0 ) ? t + 360.0 : t + 180.0;
+    else
+    {
+		t = std::atan(dy/dx) * _PI2RADS;
+		if( t >= 0.0 )
+			ret = ( dx > 0.0 ) ? t : t + 180.0;
+		else
+			ret =  ( dx > 0.0 ) ? t + 360.0 : t + 180.0;
+    }
+    std::cout << "****" << *this << dst
+    		  << " h0:" << h0.first << ' ' << h0.second << " dx:" << dx << std::endl
+    		  << " h1:" << h1.first << ' ' << h1.second << " dy:" << dy << std::endl
+    		  << "  t:" << t << ' ' << ret << std::endl;
+    return ret;
 }
 
 // answer the face that the origin hex (*this) is presenting to the dst hex.
