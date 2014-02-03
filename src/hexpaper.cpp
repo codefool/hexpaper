@@ -159,27 +159,37 @@ hexfield_t hexdrant( const Hex& org, const Facing dir, const int range )
     return w0.trail();
 }
 
-_settings::_settings()
+// class Settings implementation
+//
+// This is a singleton that contains the various default settings for the run.
+// Some of these may be moved to a Grid object so that there can be multiple
+// such grids in existance, all with different parameters. This would necessitate
+// either setting up a factory methods that produce objects dependent on those
+// paramters, or passing a grid configuration (vi-a-vis environment) into the
+// existing ctors for those objects, or something similar. We certainly don't
+// want to directly link a configuration with an object.
+//
+Settings::Settings()
     : _gridType( GridType::ODDQ )
     , _clipping( true )
     , _hexSize( 2 )
     {}
 
-_settings::~_settings()
+Settings::~Settings()
 {}
 
-_settings& _settings::instance()
+Settings& Settings::instance()
 {
-    static _settings instance;
+    static Settings instance;
     return instance;
 }
 
-const bool _settings::isOddGrid() const
+const bool Settings::isOddGrid() const
 {
     return (unsigned char)_gridType & 0x01;
 }
 
-bool _settings::setOddGrid( bool val )
+bool Settings::setOddGrid( bool val )
 {
     bool ret( isOddGrid() );
     if( val )
@@ -189,28 +199,28 @@ bool _settings::setOddGrid( bool val )
     return ret;
 }
 
-const bool _settings::isClippingOn() const
+const bool Settings::isClippingOn() const
 {
     return _clipping;
 }
 
-bool _settings::setClipping( bool val )
+bool Settings::setClipping( bool val )
 {
     std::swap( _clipping, val );
     return val;
 }
 
-GridType _settings::gridType() const
+GridType Settings::gridType() const
 {
     return _gridType;
 }
 
-int _settings::hexSize() const
+int Settings::hexSize() const
 {
     return _hexSize;
 }
 
-_settings & settings = _settings::instance();
+Settings& settings = Settings::instance();
 
 } // end ns hexpaper
 } // end ns codefool

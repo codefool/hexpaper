@@ -121,6 +121,8 @@ hexfield_t Hex::neighbors() const
     return hexCircField( *this, 1, 1 );
 }
 
+// convert the row,col (q,r) to a physical point on the canvass.
+//
 std::pair<double,double> Hex::hex2pixel( const Hex& h ) const
 {
     coord_t q = h.col();
@@ -169,27 +171,27 @@ double Hex::atan( const Hex& dst ) const
     std::pair<double,double> h0 = hex2pixel( *this );
     std::pair<double,double> h1 = hex2pixel( dst );
 
-    double dx = h1.first  - h0.first;
-    double dy = h0.second - h1.second;
+    double dc = h1.first  - h0.first;
+    double dr = h0.second - h1.second;
     double t = -1;
     double ret = 0;
 
-    if( 0.0 == dx )
+    if( 0.0 == dc )
     {
         // straight up or down
-        ret = ( dy >= 0.0 ) ? 90.0 : 270.0;
+        ret = ( dr > 0.0 ) ? 90.0 : 270.0;
     }
     else
     {
-		t = std::atan(dy/dx) * _PI2RADS;
+		t = std::atan(dr/dc) * _PI2RADS;
 		if( t >= 0.0 )
-			ret = ( dx > 0.0 ) ? t : t + 180.0;
+			ret = ( dc > 0.0 ) ? t : t + 180.0;
 		else
-			ret =  ( dx > 0.0 ) ? t + 360.0 : t + 180.0;
+			ret = ( dc > 0.0 ) ? t + 360.0 : t + 180.0;
     }
     std::cout << "****" << *this << dst
-    		  << " h0:" << h0.first << ' ' << h0.second << " dx:" << dx << std::endl
-    		  << " h1:" << h1.first << ' ' << h1.second << " dy:" << dy << std::endl
+    		  << " h0:" << h0.first << ',' << h0.second << " dc:" << dc
+    		  << " h1:" << h1.first << ',' << h1.second << " dr:" << dr
     		  << "  t:" << t << ' ' << ret << std::endl;
     return ret;
 }

@@ -11,13 +11,13 @@ namespace org {
 namespace codefool {
 namespace hexpaper {
 
-const Facing _FacingA{ Facing::FACE_A };
-const Facing _FacingB{ Facing::FACE_B };
-const Facing _FacingC{ Facing::FACE_C };
-const Facing _FacingD{ Facing::FACE_D };
-const Facing _FacingE{ Facing::FACE_E };
-const Facing _FacingF{ Facing::FACE_F };
-const Facing _FacingX{ Facing::FACE_CNT };
+const Facing _FacingA{ FACE_A };
+const Facing _FacingB{ FACE_B };
+const Facing _FacingC{ FACE_C };
+const Facing _FacingD{ FACE_D };
+const Facing _FacingE{ FACE_E };
+const Facing _FacingF{ FACE_F };
+const Facing _FacingX{ FACE_CNT };
 
 Facing::Facing( const Face f, const Face f2 )
 : _face(f), _face2(f2)
@@ -37,7 +37,7 @@ Facing::Facing( const Facing& obj )
 
 Facing Facing::operator+( const Facing& rhs ) const
 {
-    return Facing{ (Facing::Face)( ( _face + rhs.face() ) % FACE_CNT ) };
+    return Facing{ (Face)( ( _face + rhs.face() ) % FACE_CNT ) };
 }
 
 Facing Facing::operator-( const Facing& rhs ) const
@@ -45,12 +45,12 @@ Facing Facing::operator-( const Facing& rhs ) const
     int f = _face - rhs.face();
     while( f < 0 )
         f += FACE_CNT;
-	return Facing{ (Facing::Face)f };
+	return Facing{ (Face)f };
 }
 
 Facing Facing::operator+( const int bias ) const
 {
-	return Facing( (Facing::Face)( ( _face + bias ) % FACE_CNT ) );
+	return Facing( (Face)( ( _face + bias ) % FACE_CNT ) );
 }
 
 Facing Facing::operator-( const int bias ) const
@@ -58,7 +58,7 @@ Facing Facing::operator-( const int bias ) const
 	int f = _face - bias;
 	while( f < 0 )
 		f += FACE_CNT;
-	return Facing{ (Facing::Face)f };
+	return Facing{ (Face)f };
 }
 
 Facing& Facing::operator--()
@@ -87,7 +87,7 @@ Facing Facing::operator++(int)
 
 Facing& Facing::operator+=( const int bias )
 {
-    _face = (Facing::Face)( ( _face + bias ) % FACE_CNT );
+    _face = (Face)( ( _face + bias ) % FACE_CNT );
     return *this;
 }
 
@@ -96,7 +96,7 @@ Facing& Facing::operator-=( const int bias )
     int f{ _face - bias };
     while( f < 0 )
         f += FACE_CNT;
-    _face = (Facing::Face)f;
+    _face = (Face)f;
     return *this;
 }
 
@@ -105,12 +105,12 @@ Facing Facing::operator<<( const int bias ) const
     int f{ _face - bias };
     while( f < 0 )
         f += FACE_CNT;
-    return Facing{ (Facing::Face)f };
+    return Facing{ (Face)f };
 }
 
 Facing Facing::operator>>( const int bias ) const
 {
-    return Facing{ (Facing::Face)(( _face + bias ) % FACE_CNT ) };
+    return Facing{ (Face)(( _face + bias ) % FACE_CNT ) };
 }
 
 Facing& Facing::setDoubleFace( const Face f2 )
@@ -152,7 +152,7 @@ bool Facing::iterator::operator !=(const iterator& other ) const
     return _cur != other._cur;
 }
 
-Facing::Face Facing::iterator::operator*()
+Face Facing::iterator::operator*()
 {
     return _cur;
 }

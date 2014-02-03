@@ -50,7 +50,7 @@ class Offset;
 class Hex;
 class HexWalker;
 class Cube;
-class _settings;
+class Settings;
 
 // Grid Domination
 //
@@ -137,20 +137,20 @@ extern const Facing _FacingE;
 extern const Facing _FacingF;
 extern const Facing _FacingX;
 
+enum Face
+{
+    FACE_A = 0,
+    FACE_B,
+    FACE_C,
+    FACE_D,
+    FACE_E,
+    FACE_F,
+    FACE_CNT
+};
+
 class Facing
 {
 public:
-    enum Face
-    {
-        FACE_A = 0,
-        FACE_B,
-        FACE_C,
-        FACE_D,
-        FACE_E,
-        FACE_F,
-        FACE_CNT
-    };
-
     Facing( const Face f = FACE_A, const Face f2 = FACE_CNT );
     Facing( const char face );
     Facing( const Facing& obj );
@@ -188,7 +188,7 @@ public:
         iterator& next();
     private:
         std::shared_ptr<Facing> _face;
-        Facing::Face		    _cur;
+        Face		    		_cur;
         int    					_cnt;
     };
 
@@ -403,18 +403,18 @@ private:
     bool             _allowDups;
 };
 
-class _settings
+class Settings
 {
 private:
     GridType    _gridType;
     bool        _clipping;
     int         _hexSize;
 
-    _settings();
-    ~_settings();
+    Settings();
+    ~Settings();
 
 public:
-    static _settings& instance();
+    static Settings& instance();
     const int gridDominance() const;
     const bool isOddGrid() const;
     bool setOddGrid(bool val);
@@ -424,17 +424,17 @@ public:
     int      hexSize() const;
 };
 
-extern _settings& settings;     // forward decl
+extern Settings& settings;
 
 // determine the hex from (col,row) at Vector relative to the given face.
-Hex& hexAtVector( const coord_t col, const coord_t row, const Vector& v, const Facing bias = Facing::FACE_A );
+Hex& hexAtVector( const coord_t col, const coord_t row, const Vector& v, const Facing bias = FACE_A );
 
 // determine the hex from origin hex at Vector relative to the given face.
-Hex& hexAtVector( const Hex& org, const Vector& v, const Facing::Face bias = Facing::FACE_A );
+Hex& hexAtVector( const Hex& org, const Vector& v, const Face bias = FACE_A );
 
 // Determine the vector required to get from the origin hex to destination hex
 // relative to the given face.
-Vector& vectorToHex( const Hex& org, const Hex& dst, const Facing::Face bias = Facing::FACE_A );
+Vector& vectorToHex( const Hex& org, const Hex& dst, const Face bias = FACE_A );
 
 // determine the circular field between minRange and maxRange hex's from
 // origin hex.
@@ -442,7 +442,7 @@ hexfield_t hexCircField( const Hex& org, const int innerRadius = 0, const int ou
 
 // determine the hexdrant for the origin hex, at the given Facing(s), relative to
 // the provided face, for range hex's.
-hexfield_t hexdrant( const Hex& org, const std::vector<Facing>&faces, const int range, const Facing::Face bias = Facing::FACE_A );
+hexfield_t hexdrant( const Hex& org, const std::vector<Facing>&faces, const int range, const Face bias = FACE_A );
 
 // determine the hexdrant for the origin hex, at the given Facing, relative to
 // the provided face, for range hex's.
@@ -452,7 +452,7 @@ hexfield_t hexdrant( const Hex& org, const Facing bias, const int range );
 hexfield_t hexPath( const Hex& org, const Hex& dst );
 
 // determine the hex's that exist from the origin at the given Vector, relative to the given face.
-hexfield_t hexPath( const Hex& org, const Vector& v, const Facing::Face bias = Facing::FACE_A );
+hexfield_t hexPath( const Hex& org, const Vector& v, const Face bias = FACE_A );
 
 // makeHexField is used to create a list of arbitrary hex's which are relative
 // to an origin hex. This uses a navigate/pen up/pen down approach. Path contains
@@ -471,7 +471,7 @@ hexfield_t hexPath( const Hex& org, const Vector& v, const Facing::Face bias = F
 //
 // The pen is initially UP.
 //
-hexfield_t makeHexField( const Hex& org, const std::string& path, const Facing::Face face = Facing::FACE_A );
+hexfield_t makeHexField( const Hex& org, const std::string& path, const Face face = FACE_A );
 
 hexfield_t hexFieldAnd( const hexfield_t& lhs, const hexfield_t& rhs );
 hexfield_t hexFieldOr ( const hexfield_t& lhs, const hexfield_t& rhs );

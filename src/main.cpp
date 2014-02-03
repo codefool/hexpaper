@@ -56,16 +56,16 @@ int main() {
             std::cout << "atan" << h << ' ' << dst << " is " << h.atan( dst ) << std::endl;
         }
 
-        for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
+        for( int f = FACE_A; f < FACE_CNT; f++ )
         {
-            Offset off = h.delta( (Facing::Face)f );
+            Offset off = h.delta( (Face)f );
             std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
         }
         std::cout << "Even Grid" << std::endl;
         settings.setOddGrid( false );
-        for( int f = Facing::FACE_A; f < Facing::FACE_CNT; f++ )
+        for( int f = FACE_A; f < FACE_CNT; f++ )
         {
-            Offset off = h.delta( (Facing::Face)f );
+            Offset off = h.delta( (Face)f );
             std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
         }
     }
@@ -139,23 +139,23 @@ int main() {
 
     {
         std::cout << "Facing operator test" << std::endl << "prefix++ ";
-        Facing f( Facing::FACE_A );
-        for( int i = Facing::FACE_A; i < Facing::FACE_CNT; ++i )
+        Facing f( FACE_A );
+        for( int i = FACE_A; i < FACE_CNT; ++i )
             std::cout << ++f;
         std::cout << std::endl << "postfix++ ";
-        for( int i = Facing::FACE_A; i < Facing::FACE_CNT; ++i )
+        for( int i = FACE_A; i < FACE_CNT; ++i )
             std::cout << f++;
         std::cout << std::endl << "prefix-- ";
-        for( int i = Facing::FACE_A; i < Facing::FACE_CNT; ++i )
+        for( int i = FACE_A; i < FACE_CNT; ++i )
             std::cout << --f;
         std::cout << std::endl << "postfix-- ";
-        for( int i = Facing::FACE_A; i < Facing::FACE_CNT; ++i )
+        for( int i = FACE_A; i < FACE_CNT; ++i )
             std::cout << f--;
         std::cout << std::endl << "shift << ";
-        for( int i = Facing::FACE_A; i < Facing::FACE_CNT * 2; ++i )
+        for( int i = FACE_A; i < FACE_CNT * 2; ++i )
             std::cout << ( f << i );
         std::cout << std::endl << "shift >> ";
-        for( int i = Facing::FACE_A; i < Facing::FACE_CNT * 2; ++i )
+        for( int i = FACE_A; i < FACE_CNT * 2; ++i )
             std::cout << ( f >> i );
         std::cout << std::endl;
     }
