@@ -28,7 +28,7 @@ bool isOdd<std::string>(std::string s)
 { return isOdd<int>(atoi(s.c_str())); }
 
 const double _PI       { 3.141592654  };
-const double _PI2RADS  { 180.0 / _PI  };
+const double _RAD2DEG  { 180.0 / _PI  };
 const double _SQRT3    { 1.732050808  };
 const double _2SQRT3   { 2.0 * _SQRT3 };
 const double _SQRT3DIV2{ _SQRT3 / 2.0 };
@@ -159,37 +159,33 @@ hexfield_t hexdrant( const Hex& org, const Facing dir, const int range )
     return w0.trail();
 }
 
-// class Settings implementation
-//
-// This is a singleton that contains the various default settings for the run.
-// Some of these may be moved to a Grid object so that there can be multiple
-// such grids in existance, all with different parameters. This would necessitate
-// either setting up a factory methods that produce objects dependent on those
-// paramters, or passing a grid configuration (vi-a-vis environment) into the
-// existing ctors for those objects, or something similar. We certainly don't
-// want to directly link a configuration with an object.
-//
-Settings::Settings()
+GridConfig::GridConfig()
     : _gridType( GridType::ODDQ )
     , _clipping( true )
     , _hexSize( 2 )
     {}
 
-Settings::~Settings()
+GridConfig::~GridConfig()
 {}
 
-Settings& Settings::instance()
+GridConfig& GridConfig::instance()
 {
-    static Settings instance;
+    static GridConfig instance;     // Meyers singleton...
     return instance;
 }
 
-const bool Settings::isOddGrid() const
+GridConfig& GridConfig::setGridType( GridType type )
+{
+    _gridType = type;
+    return *this;
+}
+
+const bool GridConfig::isOddGrid() const
 {
     return (unsigned char)_gridType & 0x01;
 }
 
-bool Settings::setOddGrid( bool val )
+bool GridConfig::setOddGrid( bool val )
 {
     bool ret( isOddGrid() );
     if( val )
@@ -199,28 +195,51 @@ bool Settings::setOddGrid( bool val )
     return ret;
 }
 
-const bool Settings::isClippingOn() const
+const bool GridConfig::isClippingOn() const
 {
     return _clipping;
 }
 
-bool Settings::setClipping( bool val )
+bool GridConfig::setClipping( bool val )
 {
     std::swap( _clipping, val );
     return val;
 }
 
-GridType Settings::gridType() const
+GridType GridConfig::gridType() const
 {
     return _gridType;
 }
 
-int Settings::hexSize() const
+int GridConfig::isPointyTop( void ) const
+{
+    return ((unsigned char)_gridType & 0x2) ? 1 : 0;
+}
+
+int GridConfig::isFlatTop( void ) const
+{
+    return ((unsigned char)_gridType & 0x2) ? 0 : 1;
+}
+
+int GridConfig::hexSize() const
 {
     return _hexSize;
 }
 
-Settings& settings = Settings::instance();
+// when equating two configurations, then only thing that matters
+// is the gridtype. If those are the same, everything else will
+// work, but if they differ nothing will...
+bool GridConfig::operator==( const GridConfig& rhs ) const
+{
+    return _gridType == rhs._gridType;
+}
+
+bool GridConfig::operator!=(const GridConfig& rhs ) const
+{
+    return !(*this == rhs);
+}
+
+GridConfig & defaultGridConfig = GridConfig::instance();
 
 } // end ns hexpaper
 } // end ns codefool

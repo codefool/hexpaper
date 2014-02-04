@@ -12,17 +12,17 @@ namespace codefool {
 namespace hexpaper {
 
 // HexWalker
-HexWalker::HexWalker()
-: _h{ Hex{0,0} }
+HexWalker::HexWalker( const GridConfig& cfg )
+: _h{ Hex{0,0,cfg} }
 , _trail{ new std::vector<Hex> }
 , _penDown{ false }
 , _allowDups{ false }
 {}
 
-HexWalker::HexWalker( const Hex& hex, const bool allowDups )
+HexWalker::HexWalker( const Hex& hex, const bool penDown, const bool allowDups )
 : _h{ hex }
 , _trail{ new std::vector<Hex> }
-, _penDown{ false }
+, _penDown{ penDown }
 , _allowDups{ allowDups }
 {}
 
@@ -32,6 +32,9 @@ HexWalker::HexWalker( const HexWalker& obj )
 , _stack{ obj._stack }
 , _penDown{ obj._penDown }
 , _allowDups{ obj._allowDups }
+{}
+
+HexWalker::~HexWalker()
 {}
 
 HexWalker& HexWalker::setOrigin( const Hex& hex )

@@ -4,6 +4,12 @@
  *  Created on: Jan 12, 2014
  *      Author: ghester
  */
+// Distributed under GNU LESSER GENERAL PUBLIC LICENSE v2.1 (http://www.gnu.org/licenses/lgpl-2.1.html)
+//
+// This project lives at http://github.com/codefool/hexpaper
+//
+// Copyright (C) 2014 Garyl Hester
+//
 
 #include <iostream>
 #include <iomanip>

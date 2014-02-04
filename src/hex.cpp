@@ -11,22 +11,21 @@ namespace org {
 namespace codefool {
 namespace hexpaper {
 
-Hex::Hex( coord_t col, coord_t row )
-: _col{col}, _row{row}
+Hex::Hex( coord_t col, coord_t row, const GridConfig& cfg )
+: _col{col}, _row{row}, _cfg( cfg )
 {}
 
 Hex::Hex( const Hex& obj )
-: _col{ obj._col }, _row{ obj._row }
+: _col{ obj._col }, _row{ obj._row }, _cfg( obj._cfg )
 {}
 
-Hex::Hex( Offset& off )
-: _col{ off.dc() }, _row{ off.dr() }
+Hex::Hex( Offset& off, const GridConfig& cfg )
+: _col{ off.dc() }, _row{ off.dr() }, _cfg( cfg )
 {}
 
 Hex::Hex( const Cube& obj )
 : Hex( obj.toHex() )
 {}
-
 
 Hex::~Hex() {}
 
@@ -35,7 +34,7 @@ Hex::~Hex() {}
 Offset Hex::delta( const Facing& f ) const
 {
     coord_t dc = _dc[f];
-    coord_t dr = _dr[ isOdd( _col ) ^ settings.isOddGrid() ][f];
+    coord_t dr = _dr[ isOdd( _col ) ^ _cfg.isOddGrid() ][f];
     return Offset(dc,dr);
 }
 
@@ -47,6 +46,15 @@ Hex& Hex::move( const Facing& dir, int distance, const Facing& bias )
         _col += off.dc();
         _row += off.dr();
     }
+    return *this;
+}
+
+Hex& Hex::operator=( const Hex& rhs )
+{
+    if( _cfg != rhs._cfg )
+        ; // throw something, I suppose, since the coord systems are mismatched!
+    _col = rhs._col;
+    _row = rhs._row;
     return *this;
 }
 
@@ -121,32 +129,30 @@ hexfield_t Hex::neighbors() const
     return hexCircField( *this, 1, 1 );
 }
 
-// convert the row,col (q,r) to a physical point on the canvass.
-//
 std::pair<double,double> Hex::hex2pixel( const Hex& h ) const
 {
-    coord_t q = h.col();
-    coord_t r = h.row();
-    double size = (double)settings.hexSize();
+    double q = h.col();
+    double r = h.row();
+    double size = (double)_cfg.hexSize();
     double x;
     double y;
-    switch( settings.gridType() )
+    switch( _cfg.gridType() )
     {
     case GridType::EVENQ:
-        x = size * 3/2 * q;
-        y = size * _SQRT3 * (r - 0.5 * (q&1));
+        x = size * 3.0 * q;
+        y = size * _SQRT3 * 2 * (r - (h.col()&1));
         break;
     case GridType::EVENR:
-        x = size * _SQRT3 * (q - 0.5 * (r&1));
-        y = size * 3/2 * r;
+        x = size * _SQRT3 * (q - 0.5 * (h.row()&1));
+        y = size * 3.0 * r;
         break;
     case GridType::ODDQ:
-        x = size * 3/2 * q;
-        y = size * _SQRT3 * (r + 0.5 * (q&1));
+        x = size * 3.0 * q;
+        y = size * _SQRT3 * 2 * (r + 0.5 * (h.col()&1));
         break;
     case GridType::ODDR:
-        x = size * _SQRT3 * (q + 0.5 * (r&1));
-        y = size * 3/2 * r;
+        x = size * _SQRT3 * (q + 0.5 * (h.row()&1));
+        y = size * 3.0 * r;
         break;
     }
     return std::pair<double,double>( x, y );
@@ -168,31 +174,48 @@ double Hex::atan( const Hex& dst ) const
     if( *this == dst )
         return 0.0;
 
-    std::pair<double,double> h0 = hex2pixel( *this );
-    std::pair<double,double> h1 = hex2pixel( dst );
+    Cube c0( *this );
+    Cube c1( dst );
 
-    double dc = h1.first  - h0.first;
-    double dr = h0.second - h1.second;
+    double x0;
+    double y0;
+    double x1;
+    double y1;
+    if( _cfg.isPointyTop() )
+    {
+        x0 =  _SQRT3 * (c0.x() + c0.z()/2.0);
+        y0 = 1.5 * c0.z();
+        x1 = _SQRT3 * (c1.x() + c1.z()/2.0);
+        y1 = 1.5 * c1.z();
+    }
+    else
+    {
+        x0 = 1.5 * c0.x();
+        y0 = _SQRT3 * (c0.z() + c0.x()/2.0);
+        x1 = 1.5 * c1.x();
+        y1 = _SQRT3 * (c1.z() + c1.x()/2.0);
+    }
+
+    double dc = x1 - x0;
+    double dr = y0 - y1;
     double t = -1;
     double ret = 0;
 
     if( 0.0 == dc )
     {
         // straight up or down
-        ret = ( dr > 0.0 ) ? 90.0 : 270.0;
+        ret = ( dr >= 0.0 ) ? 90.0 : 270.0;
     }
     else
     {
-		t = std::atan(dr/dc) * _PI2RADS;
-		if( t >= 0.0 )
-			ret = ( dc > 0.0 ) ? t : t + 180.0;
-		else
-			ret = ( dc > 0.0 ) ? t + 360.0 : t + 180.0;
+        t   = std::atan(dr/dc);
+        ret = ( t >= 0.0 ? t : ( 2.0 *_PI + t ) ) * _RAD2DEG; //360.0 / ( 2*_PI);
     }
-    std::cout << "****" << *this << dst
-    		  << " h0:" << h0.first << ',' << h0.second << " dc:" << dc
-    		  << " h1:" << h1.first << ',' << h1.second << " dr:" << dr
-    		  << "  t:" << t << ' ' << ret << std::endl;
+    std::cout << "   " << *this << dst
+    		  << " h0:" << x0 << ',' << y0
+    		  << " h1:" << x1 << ',' << y1
+    		  << " dc:" << dc << " dr:" << dr
+    		  << " t:" << t << ' ' << ret << std::endl;
     return ret;
 }
 
@@ -213,6 +236,11 @@ Facing Hex::bearing( const Hex& dst ) const
         f.setDoubleFace( ( f >> 1 ).face() );
     }
     return f;
+}
+
+const GridConfig& Hex::config( void ) const
+{
+    return _cfg;
 }
 
 std::ostream& operator << ( std::ostream& os, const Hex& hex )

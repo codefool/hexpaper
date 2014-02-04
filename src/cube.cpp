@@ -11,28 +11,31 @@ namespace codefool {
 namespace hexpaper {
 
 // class template Cube implementation
-Cube::Cube( coord_t x, coord_t y, coord_t z )
-: _c( x, y, z )
+Cube::Cube( coord_t x, coord_t y, coord_t z, const GridConfig& cfg )
+: _c( x, y, z ), _cfg( cfg )
 {}
 
 Cube::Cube( const Hex& hex )
-: _c( 0, 0, 0 )
+: _c( 0, 0, 0 ), _cfg( hex.config() )
 {
     _c = hex2cube( hex );
 }
 
 Cube::Cube( const Cube& obj )
-: _c( obj._c )
+: _c( obj._c ), _cfg( obj._cfg )
 {}
 
-Cube::Cube( const CubeCoord& tri )
-: _c( tri )
+Cube::Cube( const CubeCoord& tri, const GridConfig& cfg )
+: _c( tri ), _cfg{ cfg }
+{}
+
+Cube::~Cube()
 {}
 
 // convert the cube coordinates to appropriate hex coords
 Hex Cube::toHex() const
 {
-    return cube2hex( _c );
+    return cube2hex( _c, _cfg );
 }
 
 Cube Cube::operator*(const coord_t val) const
@@ -50,6 +53,16 @@ Cube Cube::operator+(const Cube& rhs ) const
     return Cube( _c._x + rhs._c._x, _c._y + rhs._c._y, _c._z + rhs._c._z );
 }
 
+Cube Cube::operator-(const coord_t val) const
+{
+    return Cube( _c._x - val, _c._y - val, _c._z - val );
+}
+
+Cube Cube::operator-(const Cube& rhs ) const
+{
+    return Cube( _c._x - rhs._c._x, _c._y - rhs._c._y, _c._z - rhs._c._z );
+}
+
 Triplet<double> Cube::operator*(const double val) const
 {
     return Triplet<double>( _c._x * val, _c._y * val, _c._z * val );
@@ -64,11 +77,6 @@ bool Cube::operator!=(const Cube& rhs ) const
 {
 	return !(*this == rhs);
 }
-
-inline coord_t Cube::x() const { return _c._x; }
-inline coord_t Cube::y() const { return _c._y; }
-inline coord_t Cube::z() const { return _c._z; }
-inline CubeCoord Cube::c() const { return _c; }
 
 coord_t Cube::distance( const Cube& rhs ) const
 {
@@ -91,7 +99,7 @@ CubePath Cube::path( const Cube& dst ) const
 			Triplet<double> A = *this * ( 1.0 - iN );
 			Triplet<double> B = dst * iN;
 			Triplet<double> C = A + B;
-			Cube R( round( C ) );
+			Cube R( round( C ), _cfg );
 			Hex H( R );
 			//std::cout << "A:" << A << " B:" << B << " C:" << C << " R:" << R << " H:" << H << std::endl;
 			ret.push_back( R );
@@ -125,13 +133,13 @@ CubeCoord round( const Triplet<double>& rhs )
     return CubeCoord( rx, ry, rz );
 }
 
-CubeCoord hex2cube( coord_t q, coord_t r )
+CubeCoord hex2cube( coord_t q, coord_t r, const GridConfig& cfg )
 {
     coord_t x;
     coord_t y;
     coord_t z;
 
-    switch( settings.gridType() )
+    switch( cfg.gridType() )
     {
     case GridType::EVENQ:
         x = q;
@@ -162,12 +170,12 @@ CubeCoord hex2cube( const Hex& hex )
     return hex2cube( hex.col(), hex.row() );
 }
 
-Hex cube2hex( const coord_t x, const coord_t y, const coord_t z )
+Hex cube2hex( const coord_t x, const coord_t y, const coord_t z, const GridConfig& cfg )
 {
     coord_t r;
     coord_t q;
 
-    switch( settings.gridType() )
+    switch( cfg.gridType() )
     {
     case GridType::EVENQ:
         r = z + (x+(x&1)) / 2;
@@ -186,27 +194,27 @@ Hex cube2hex( const coord_t x, const coord_t y, const coord_t z )
         r = z;
         break;
     }
-    return Hex(r,q);
+    return Hex(r,q,cfg);
 }
 
-Hex cube2hex( const CubeCoord& tri )
+Hex cube2hex( const CubeCoord& tri, const GridConfig& cfg )
 {
-    return cube2hex( tri._x, tri._y, tri._z );
+    return cube2hex( tri._x, tri._y, tri._z, cfg );
 }
 
 CubePath hexpath2cube( const HexPath& hp )
 {
 	CubePath ret;
-	for( auto n : hp )
-		ret.push_back( Cube( n ) );
+	for( auto hex : hp )
+		ret.push_back( Cube( hex ) );
 	return ret;
 }
 
-HexPath  cubepath2hex( const CubePath& cp )
+HexPath cubepath2hex( const CubePath& cp )
 {
 	HexPath ret;
-	for( auto n : cp )
-		ret.push_back( Hex( n ) );
+	for( auto cube : cp )
+		ret.push_back( Hex( cube ) );
 	return ret;
 }
 

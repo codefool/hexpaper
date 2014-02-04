@@ -32,7 +32,7 @@ int main() {
     }
 
     std::cout << "Odd Grid" << std::endl;
-    settings.setOddGrid( true );
+    defaultGridConfig.setOddGrid( true );
     Hex h(5,5);
     {
         Hex dst{1,1};
@@ -62,7 +62,7 @@ int main() {
             std::cout << "Facing " << f << " " << (int)off.dc() << ',' << (int)off.dr() << std::endl;
         }
         std::cout << "Even Grid" << std::endl;
-        settings.setOddGrid( false );
+        defaultGridConfig.setOddGrid( false );
         for( int f = FACE_A; f < FACE_CNT; f++ )
         {
             Offset off = h.delta( (Face)f );
@@ -167,20 +167,22 @@ int main() {
         std::cout << std::endl;
     }
     {
-        settings.setOddGrid( true );
+        defaultGridConfig.setOddGrid( true );
         for( auto org : {Hex{3,3},Hex{5,4},Hex{4,5},Hex{4,4}} )
         {
-            std::cout << "***** Exhaustive path test for 6x6 grid with origin " << org << "****" << std::endl;
+            std::cout << std::endl
+                      << "***** Exhaustive path test for 6x6 grid with origin " << org << "****" << std::endl;
             for( coord_t col = 1; col < 7; ++col )
             {
                 for( coord_t row = 1; row < 7; ++row )
                 {
                     Hex dst{ col, row };
-                    HexPath path = cubepath2hex( Cube( org ).path( dst ) );
-                    std::cout << "*****";
-                    for( auto h : path )
-                    	std::cout << h;
-                    std::cout << " atan:" << org.atan( dst )
+                    std::cout << "*****" << org << dst << std::endl;
+                    //HexPath path = cubepath2hex( Cube( org ).path( dst ) );
+                    //for( auto h : path )
+                    //	std::cout << h;
+                    double t = org.atan( dst );
+                    std::cout << " atan:" << t
                               << " bearing:" << org.bearing( dst )
                               << std::endl;
                 }

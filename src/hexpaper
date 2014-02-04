@@ -32,25 +32,108 @@ namespace org {
 namespace codefool {
 namespace hexpaper {
 
-// bitmap
-// dominance .x   0 = even, 1 = odd
-// q or r    x.   0 = column (q), 1 = row (r)
-enum class GridType : unsigned char
-{
-    EVENQ = 0x00,
-    EVENR = 0x01,
-    ODDQ  = 0x02,
-    ODDR  = 0x03
-};
-
-// Forward define all classes
+// Forward declare all classes
 template<class T> struct Triplet;
 class Facing;
 class Offset;
 class Hex;
 class HexWalker;
 class Cube;
-class Settings;
+class GridConfig;
+
+// bitmap
+// dominance .x   0 = even, 1 = odd
+// q or r    x.   0 = column (q), 1 = row (r)
+enum class GridType : unsigned char
+{
+    EVENQ = 0x00,
+    ODDQ  = 0x01,
+    EVENR = 0x02,
+    ODDR  = 0x03
+};
+
+//  Primary Facings:
+//       ___     ___
+//      /fa \___/ab \       *
+//      \___/ A \___/
+//   ___/ F \___/ B \___
+//  /ef \___/   \___/bc \   *
+//  \___/ E \___/ C \___/
+//      \___/ D \___/
+//      / de\___/cd \       *
+//      \___/   \___/
+//
+// A hexagon is made up of six equalateral triangles. If we assign the side of
+// that triangle a length 2, then it can be divided into two right triangles
+// of the dimensions base(1), height(sqrt(3)), and hyp(2).
+//
+//
+enum Face
+{
+    FACE_A = 0,
+    FACE_B,
+    FACE_C,
+    FACE_D,
+    FACE_E,
+    FACE_F,
+    FACE_CNT
+};
+
+extern const double _PI;
+extern const double _RAD2DEG;
+extern const double _SQRT3;
+extern const double _2SQRT3;
+extern const double _SQRT3DIV2;
+extern const double _INV2SQRT3;
+
+// define some handy Facing constants
+extern const Facing _FacingA;
+extern const Facing _FacingB;
+extern const Facing _FacingC;
+extern const Facing _FacingD;
+extern const Facing _FacingE;
+extern const Facing _FacingF;
+extern const Facing _FacingX;
+
+// class GridConfig declaration
+class GridConfig
+{
+private:
+    GridType    _gridType;
+    bool        _clipping;
+    int         _hexSize;
+
+    GridConfig();
+
+public:
+    ~GridConfig();
+    static GridConfig& instance();
+
+    GridConfig& setGridType( GridType type );
+    const int   gridDominance() const;
+    const bool  isOddGrid() const;
+    bool        setOddGrid(bool val);
+    const bool  isClippingOn() const;
+    bool        setClipping(bool val);
+    GridType    gridType() const;
+    int         isPointyTop() const;
+    int			isFlatTop() const;
+    int         hexSize() const;
+    bool        operator==( const GridConfig& rhs ) const;
+    bool        operator!=( const GridConfig& rhs ) const;
+};
+
+extern GridConfig& defaultGridConfig;     // forward decl
+
+//  Odd-q Grid:        Even-q Grid:
+//   __    __    __        __    __
+//  /01\__/21\__/41\    __/11\__/31\__
+//  \__/11\__/31\__/   /01\__/21\__/41\         *
+//  /02\__/22\__/42\   \__/12\__/32\__/
+//  \__/12\__/32\__/   /02\__/22\__/42\         *
+//  /03\__/23\__/43\   \__/13\__/33\__/
+//  \__/13\__/33\__/   /03\__/23\__/43\         *
+//  /04\__/24\__/44\   \__/14\__/34\__/
 
 // Grid Domination
 //
@@ -105,49 +188,6 @@ bool isOdd<std::string>(std::string s);
 template <typename T>
 bool isEven(T x) { return (int)(!isOdd(x)); }
 
-//  Primary Facings:
-//       ___     ___
-// 		/fa \___/ab \		*
-// 	    \___/ A \___/
-// 	 ___/ F \___/ B \___
-// 	/ef \___/   \___/bc \	*
-// 	\___/ E \___/ C \___/
-// 		\___/ D \___/
-// 		/ de\___/cd \		*
-// 		\___/   \___/
-//
-// A hexagon is made up of six equalateral triangles. If we assign the side of
-// that triangle a length 2, then it can be divided into two right triangles
-// of the dimensions base(1), height(sqrt(3)), and hyp(2).
-//
-//
-extern const double _PI;
-extern const double _PI2RADS;
-extern const double _SQRT3;
-extern const double _2SQRT3;
-extern const double _SQRT3DIV2;
-extern const double _INV2SQRT3;
-
-// define some handy Facing constants
-extern const Facing _FacingA;
-extern const Facing _FacingB;
-extern const Facing _FacingC;
-extern const Facing _FacingD;
-extern const Facing _FacingE;
-extern const Facing _FacingF;
-extern const Facing _FacingX;
-
-enum Face
-{
-    FACE_A = 0,
-    FACE_B,
-    FACE_C,
-    FACE_D,
-    FACE_E,
-    FACE_F,
-    FACE_CNT
-};
-
 class Facing
 {
 public:
@@ -188,7 +228,7 @@ public:
         iterator& next();
     private:
         std::shared_ptr<Facing> _face;
-        Face		    		_cur;
+        Face		            _cur;
         int    					_cnt;
     };
 
@@ -215,6 +255,9 @@ struct Triplet
     Triplet<T> operator*(const T val) const;
     Triplet<T> operator+(const T val) const;
     Triplet<T> operator+(const Triplet<T>& rhs) const;
+    Triplet<T> operator-(const Triplet<T>& rhs) const;
+    Triplet<T>& operator+=(const Triplet<T>& rhs) const;
+    Triplet<T>& operator-=(const Triplet<T>& rhs) const;
     template<class U>
     friend std::ostream& operator<<( std::ostream& os, Triplet<U>& obj );
 };
@@ -247,6 +290,30 @@ Triplet<T> Triplet<T>::operator+(const Triplet<T>& rhs) const
     return Triplet<T>( _x + rhs._x, _y + rhs._y, _z + rhs._z );
 }
 
+template<class T>
+Triplet<T> Triplet<T>::operator-(const Triplet<T>& rhs) const
+{
+    return Triplet<T>( _x - rhs._x, _y - rhs._y, _z - rhs._z );
+}
+
+template<class T>
+Triplet<T>& Triplet<T>::operator+=(const Triplet<T>& rhs) const
+{
+    _x += rhs._x;
+    _y += rhs._y;
+    _z += rhs._z;
+    return *this;
+}
+
+template<class T>
+Triplet<T>& Triplet<T>::operator-=(const Triplet<T>& rhs) const
+{
+    _x -= rhs._x;
+    _y -= rhs._y;
+    _z -= rhs._z;
+    return *this;
+}
+
 template<class U>
 std::ostream& operator<<( std::ostream& os, Triplet<U>& obj )
 {
@@ -259,22 +326,26 @@ std::ostream& operator<<( std::ostream& os, Triplet<U>& obj )
 class Cube
 {
 public:
-    Cube( coord_t x= 0, coord_t y = 0, coord_t z = 0 );
+    Cube( coord_t x= 0, coord_t y = 0, coord_t z = 0, const GridConfig& cfg = defaultGridConfig );
     Cube( const Cube& obj );
     Cube( const Hex& hex );
-    Cube( const CubeCoord& tri );
+    Cube( const CubeCoord& tri, const GridConfig& cfg = defaultGridConfig );
+    ~Cube();
 
     Cube operator*(const coord_t val) const;
     Cube operator+(const coord_t val) const;
     Cube operator+(const Cube& rhs ) const;
+    Cube operator-(const coord_t val) const;
+    Cube operator-(const Cube& rhs ) const;
     Triplet<double> operator*(const double val) const;
     bool operator==(const Cube& rhs ) const;
     bool operator!=(const Cube& rhs ) const;
 
-    inline coord_t x() const;
-    inline coord_t y() const;
-    inline coord_t z() const;
-    inline CubeCoord c() const;
+    inline coord_t x() const { return _c._x; }
+    inline coord_t y() const { return _c._y; }
+    inline coord_t z() const { return _c._z; }
+    inline CubeCoord c() const { return _c; }
+    const GridConfig& config( void ) const { return _cfg; }
 
     coord_t distance( const Cube& rhs ) const;
     CubePath path( const Cube& dst ) const;
@@ -284,13 +355,14 @@ public:
     friend std::ostream& operator<<( std::ostream& os, const Cube& obj );
 
 private:
-    CubeCoord _c;
+    CubeCoord        _c;
+    const GridConfig _cfg;
 };
 
-CubeCoord hex2cube( coord_t q, coord_t r );
+CubeCoord hex2cube( coord_t q, coord_t r, const GridConfig& cfg = defaultGridConfig );
 CubeCoord hex2cube( const Hex& hex );
-Hex cube2hex( const coord_t x, const coord_t y, const coord_t z );
-Hex cube2hex( const CubeCoord& tri );
+Hex cube2hex( const coord_t x, const coord_t y, const coord_t z, const GridConfig& cfg = defaultGridConfig );
+Hex cube2hex( const CubeCoord& tri, const GridConfig& cfg = defaultGridConfig );
 CubePath hexpath2cube( const HexPath& hp );
 HexPath  cubepath2hex( const CubePath& cp );
 
@@ -322,9 +394,9 @@ private:
 class Hex
 {
 public:
-    Hex( coord_t col, coord_t row );
+    Hex( coord_t col, coord_t row, const GridConfig& cfg = defaultGridConfig );
     Hex( const Hex& obj );
-    Hex( Offset& off );
+    Hex( Offset& off, const GridConfig& cfg = defaultGridConfig );
     Hex( const Cube& obj );
     virtual ~Hex();
     coord_t row( void ) const { return _row; }
@@ -332,6 +404,7 @@ public:
     Offset delta(const Facing& f) const;
     Hex& move( const Facing& dir, int distance = 1, const Facing& bias = _FacingA );
     Hex at( const Facing& f );
+    Hex& operator=( const Hex& rhs );
     Hex& operator+=( const Offset& off );
     Hex  operator+( const Offset& off );
     Offset operator-( const Hex& rhs ) const;
@@ -346,10 +419,12 @@ public:
     std::pair<double,double> hex2pixel( const Hex& h ) const;
     double atan( const Hex& dst ) const;
     Facing bearing( const Hex& dst ) const;
+    const GridConfig& config( void ) const;
     friend std::ostream& operator<<(std::ostream& os, const Hex& hex);
 private:
-    coord_t  _col;
-    coord_t  _row;
+    coord_t     _col;
+    coord_t     _row;
+    const GridConfig& _cfg;
 };
 
 class Heading
@@ -370,9 +445,10 @@ private:
 class HexWalker
 {
 public:
-    HexWalker();
-    HexWalker( const Hex& hex, const bool allowDups = false );
+    HexWalker( const GridConfig& cfg = defaultGridConfig );
+    HexWalker( const Hex& hex, const bool penDown = false, const bool allowDups = false );
     HexWalker( const HexWalker& obj );
+    ~HexWalker();
 
     HexWalker& setOrigin( const Hex& hex );
     // walk the hex around
@@ -392,39 +468,17 @@ public:
     HexWalker& sort( void );
     hexfield_t trail( void );
     const Hex& hex( void ) const;
+    inline const GridConfig& config() const { return _h.config(); }
     Hex operator*() const;
     friend std::ostream& operator<<( std::ostream& os, const HexWalker& hw );
 
 private:
-    Hex              _h;
-    hexfield_t       _trail;
-    std::deque<Hex>  _stack;
-    bool             _penDown;
-    bool             _allowDups;
+    Hex               _h;
+    hexfield_t        _trail;
+    std::deque<Hex>   _stack;
+    bool              _penDown;
+    bool              _allowDups;
 };
-
-class Settings
-{
-private:
-    GridType    _gridType;
-    bool        _clipping;
-    int         _hexSize;
-
-    Settings();
-    ~Settings();
-
-public:
-    static Settings& instance();
-    const int gridDominance() const;
-    const bool isOddGrid() const;
-    bool setOddGrid(bool val);
-    const bool isClippingOn() const;
-    bool setClipping(bool val);
-    GridType gridType() const;
-    int      hexSize() const;
-};
-
-extern Settings& settings;
 
 // determine the hex from (col,row) at Vector relative to the given face.
 Hex& hexAtVector( const coord_t col, const coord_t row, const Vector& v, const Facing bias = FACE_A );
