@@ -1,3 +1,9 @@
+// Distributed under GNU LESSER GENERAL PUBLIC LICENSE v2.1 (http://www.gnu.org/licenses/lgpl-2.1.html)
+//
+// This project lives at http://github.com/codefool/hexpaper
+//
+// Copyright (C) 2014 Garyl Hester
+//
 #include "hexpaper"
 #include <cmath>
 #include <sstream>
@@ -158,6 +164,10 @@ hexfield_t hexdrant( const Hex& org, const Facing dir, const int range )
 
     return w0.trail();
 }
+
+// class GridCongif implementation
+//
+static unsigned long GridConfig::_MAGIC{0xc0def001};
 
 GridConfig::GridConfig()
     : _gridType( GridType::ODDQ )

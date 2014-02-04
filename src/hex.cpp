@@ -4,7 +4,12 @@
  *  Created on: Jan 30, 2014
  *      Author: ghester
  */
-
+// Distributed under GNU LESSER GENERAL PUBLIC LICENSE v2.1 (http://www.gnu.org/licenses/lgpl-2.1.html)
+//
+// This project lives at http://github.com/codefool/hexpaper
+//
+// Copyright (C) 2014 Garyl Hester
+//
 #include "hexpaper"
 
 namespace org {
@@ -129,31 +134,20 @@ hexfield_t Hex::neighbors() const
     return hexCircField( *this, 1, 1 );
 }
 
-std::pair<double,double> Hex::hex2pixel( const Hex& h ) const
+std::pair<double,double> Hex::toPixel( void ) const
 {
-    double q = h.col();
-    double r = h.row();
-    double size = (double)_cfg.hexSize();
+    Cube cube( *this );
     double x;
     double y;
-    switch( _cfg.gridType() )
+    if( _cfg.isPointyTop() )
     {
-    case GridType::EVENQ:
-        x = size * 3.0 * q;
-        y = size * _SQRT3 * 2 * (r - (h.col()&1));
-        break;
-    case GridType::EVENR:
-        x = size * _SQRT3 * (q - 0.5 * (h.row()&1));
-        y = size * 3.0 * r;
-        break;
-    case GridType::ODDQ:
-        x = size * 3.0 * q;
-        y = size * _SQRT3 * 2 * (r + 0.5 * (h.col()&1));
-        break;
-    case GridType::ODDR:
-        x = size * _SQRT3 * (q + 0.5 * (h.row()&1));
-        y = size * 3.0 * r;
-        break;
+        x =  _SQRT3 * (cube.x() + cube.z()/2.0);
+        y = 1.5 * cube.z();
+    }
+    else
+    {
+        x = 1.5 * cube.x();
+        y = _SQRT3 * (cube.z() + cube.x()/2.0);
     }
     return std::pair<double,double>( x, y );
 }
@@ -174,46 +168,26 @@ double Hex::atan( const Hex& dst ) const
     if( *this == dst )
         return 0.0;
 
-    Cube c0( *this );
-    Cube c1( dst );
+    std::pair<double,double> h0 = toPixel();
+    std::pair<double,double> h1 = dst.toPixel();
 
-    double x0;
-    double y0;
-    double x1;
-    double y1;
-    if( _cfg.isPointyTop() )
-    {
-        x0 =  _SQRT3 * (c0.x() + c0.z()/2.0);
-        y0 = 1.5 * c0.z();
-        x1 = _SQRT3 * (c1.x() + c1.z()/2.0);
-        y1 = 1.5 * c1.z();
-    }
-    else
-    {
-        x0 = 1.5 * c0.x();
-        y0 = _SQRT3 * (c0.z() + c0.x()/2.0);
-        x1 = 1.5 * c1.x();
-        y1 = _SQRT3 * (c1.z() + c1.x()/2.0);
-    }
-
-    double dc = x1 - x0;
-    double dr = y0 - y1;
+    double dc = h1.first  - h0.first;
+    double dr = h0.second - h1.second;
     double t = -1;
     double ret = 0;
 
     if( 0.0 == dc )
     {
-        // straight up or down
-        ret = ( dr >= 0.0 ) ? 90.0 : 270.0;
+        ret = ( dr >= 0.0 ) ? 90.0 : 270.0; // straight up or down
     }
     else
     {
         t   = std::atan(dr/dc);
-        ret = ( t >= 0.0 ? t : ( 2.0 *_PI + t ) ) * _RAD2DEG; //360.0 / ( 2*_PI);
+        ret = ( t >= 0.0 ? t : ( 2.0 *_PI + t ) ) * _RAD2DEG;
     }
     std::cout << "   " << *this << dst
-    		  << " h0:" << x0 << ',' << y0
-    		  << " h1:" << x1 << ',' << y1
+    		  << " h0:" << h0.first << ',' << h0.second
+    		  << " h1:" << h1.first << ',' << h1.second
     		  << " dc:" << dc << " dr:" << dr
     		  << " t:" << t << ' ' << ret << std::endl;
     return ret;

@@ -10,7 +10,6 @@
 //
 // Copyright (C) 2014 Garyl Hester
 //
-
 #include <iostream>
 #include <iomanip>
 #include <vector>

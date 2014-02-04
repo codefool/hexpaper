@@ -1,5 +1,7 @@
 // hexpaper - library for working with hexagon grids
-
+// Distributed under GNU LESSER GENERAL PUBLIC LICENSE v2.1 (http://www.gnu.org/licenses/lgpl-2.1.html)
+//
+// This project lives at http://github.com/codefool/hexpaper
 //
 // Copyright (C) 2014 Garyl Hester
 //
@@ -98,6 +100,8 @@ extern const Facing _FacingX;
 // class GridConfig declaration
 class GridConfig
 {
+private:
+	static unsigned long _MAGIC;
 private:
     GridType    _gridType;
     bool        _clipping;
@@ -416,7 +420,7 @@ public:
     bool operator>=(const Hex& rhs ) const;
     bool operator<=(const Hex& rhs ) const;
     hexfield_t neighbors() const;
-    std::pair<double,double> hex2pixel( const Hex& h ) const;
+    std::pair<double,double>toPixel( void ) const;
     double atan( const Hex& dst ) const;
     Facing bearing( const Hex& dst ) const;
     const GridConfig& config( void ) const;
