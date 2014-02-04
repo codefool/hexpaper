@@ -101,7 +101,7 @@ extern const Facing _FacingX;
 class GridConfig
 {
 private:
-	static unsigned long _MAGIC;
+	static const unsigned long _MAGIC;
 private:
     GridType    _gridType;
     bool        _clipping;
@@ -465,15 +465,15 @@ public:
     HexWalker& walk( std::string&& path, const Facing& bias = _FacingA );
     HexWalker& penUp( void );
     HexWalker& penDown( void );
-    HexWalker& push( void );
-    HexWalker& pop( void );
+    HexWalker& mark( void );
+    HexWalker& recall( void );
     HexWalker& clear( void );
     HexWalker& move( const Facing& dir, int cnt, const Facing& bias = _FacingA );
     HexWalker& sort( void );
     hexfield_t trail( void );
     const Hex& hex( void ) const;
     inline const GridConfig& config() const { return _h.config(); }
-    Hex operator*() const;
+    Hex& operator*();
     friend std::ostream& operator<<( std::ostream& os, const HexWalker& hw );
 
 private:

@@ -77,8 +77,8 @@ HexWalker& HexWalker::walk( std::string&& path, const Facing& bias )
             {
             case 'p': penDown(); break;
             case 'u': penUp();   break;
-            case 'm': push();    break;
-            case 'r': pop();     break;
+            case 'm': mark();    break;
+            case 'r': recall();  break;
             default:
             {
                 std::stringstream msg;
@@ -102,13 +102,13 @@ HexWalker& HexWalker::penDown( void )
     return *this;
 }
 
-HexWalker& HexWalker::push( void )
+HexWalker& HexWalker::mark( void )
 {
     _stack.push_back( _h );
     return *this;
 }
 
-HexWalker& HexWalker::pop( void )
+HexWalker& HexWalker::recall( void )
 {
     _h = _stack.back();
     _stack.pop_back();
@@ -162,7 +162,7 @@ const Hex& HexWalker::hex( void ) const
     return _h;
 }
 
-Hex HexWalker::operator*() const
+Hex& HexWalker::operator*()
 {
 	return _h;
 }

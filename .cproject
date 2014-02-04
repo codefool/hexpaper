@@ -23,7 +23,7 @@
 								</outputEntries>
 							</builder>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.base.222003837" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.base">
-								<option id="gnu.both.asm.option.include.paths.2114508343" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.2114508343" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="C:/MinGW/mingw32/lib/gcc/mingw32/4.8.1/include/c++"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1490801543" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
@@ -43,10 +43,10 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.base.1964241311" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.base">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.820819663" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.251692456" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.include.paths.1291609888" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.1291609888" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="C:/MinGW/mingw32/lib/gcc/mingw32/4.8.1/include/c++"/>
 								</option>
-								<option id="gnu.c.compiler.option.preprocessor.def.symbols.2022066025" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.2022066025" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__cplusplus=201103"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1079534379" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>

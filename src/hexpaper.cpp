@@ -144,14 +144,14 @@ hexfield_t hexdrant( const Hex& org, const Facing dir, const int range )
         // proceed in a c-b (biased) pattern until w0==w1
         std::cout << "left " << w0.hex() << " right " << w1.hex() << std::endl;
         short cnt{0};
-        w0.push();
+        w0.mark();
         while( w0.hex() != w1.hex() )
         {
             // w0 pen is still down
             w0.move( m[isOdd(cnt++)], 1 );
             std::cout << "insert " << w0.hex() << std::endl;
         }
-        w0.pop();
+        w0.recall();
     }
 
     std::cout << "w0:";
@@ -167,7 +167,7 @@ hexfield_t hexdrant( const Hex& org, const Facing dir, const int range )
 
 // class GridCongif implementation
 //
-static unsigned long GridConfig::_MAGIC{0xc0def001};
+const unsigned long GridConfig::_MAGIC{0xc0def001};
 
 GridConfig::GridConfig()
     : _gridType( GridType::ODDQ )

@@ -111,9 +111,6 @@ std::ostream& operator << ( std::ostream& os, const HexInfo& hi )
             os << std::endl;
         }
     }
-
-
-
 	return os;
 }
 

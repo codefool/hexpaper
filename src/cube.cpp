@@ -22,10 +22,8 @@ Cube::Cube( coord_t x, coord_t y, coord_t z, const GridConfig& cfg )
 {}
 
 Cube::Cube( const Hex& hex )
-: _c( 0, 0, 0 ), _cfg( hex.config() )
-{
-    _c = hex2cube( hex );
-}
+: _c( hex2cube( hex ) ), _cfg( hex.config() )
+{}
 
 Cube::Cube( const Cube& obj )
 : _c( obj._c ), _cfg( obj._cfg )

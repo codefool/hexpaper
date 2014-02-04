@@ -77,13 +77,12 @@ Hex Hex::operator+( const Offset& off )
 
 Hex Hex::at( const Facing& f )
 {
-    Hex ret{ *this };
-    return ret + delta( f );
+    return *this + delta( f );
 }
 
 Offset Hex::operator-( const Hex& rhs ) const
 {
-    return Offset( col() - rhs.col(), row() - rhs.row() );
+    return Offset( _col - rhs._col, _row - rhs._row );
 }
 
 bool Hex::operator==(const Hex& rhs ) const
